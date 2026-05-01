@@ -6,27 +6,27 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { categories } from "@/data/products";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export const BentoCategories = () => {
   return (
-    <section className="container mx-auto py-24 md:py-32">
+    <section className="container mx-auto section py-24 md:py-32">
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">
+          <p className="font-mono text-xs tracking-wide uppercase text-muted-foreground mb-3">
             Shop by Sport
           </p>
-          <h2 className="font-display text-5xl md:text-7xl uppercase leading-none">
+          <h2 className="font-display text-heading-2 md:text-heading-1 uppercase">
             Find your
             <br />
             arena.
           </h2>
         </div>
-        <a
-          href="#"
-          className="hidden md:inline-flex items-center gap-2 text-sm uppercase tracking-wider link-underline"
-        >
-          View all <ArrowUpRight className="h-4 w-4" />
-        </a>
+        <Button asChild variant="link" className="hidden md:inline-flex">
+          <a href="#">
+            View all <ArrowUpRight className="h-4 w-4" />
+          </a>
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:auto-rows-[280px]">
@@ -49,7 +49,7 @@ export const BentoCategories = () => {
             />
             <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
             <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
-              <h3 className="font-display text-3xl md:text-4xl uppercase">
+              <h3 className="font-display font-bold text-2xl md:text-4xl uppercase">
                 {cat.name}
               </h3>
               <span className="mt-2 inline-flex items-center gap-1 text-xs uppercase tracking-widest opacity-80 group-hover:opacity-100 transition">

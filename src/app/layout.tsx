@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Navbar } from "@/layouts/navbar";
 import { Footer } from "@/layouts/footer";
 import { CartSheet } from "@/layouts/cart-sheet";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const jost = Jost({
   variable: "--font-jost",
@@ -42,14 +43,22 @@ export default function RootLayout({
         "font-sans",
         inter.variable,
       )}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        <main className="flex-1">
-          {children}
-          <CartSheet />
-        </main>
-        <Footer />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar />
+          <main className="flex-1">
+            {children}
+            <CartSheet />
+          </main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );
