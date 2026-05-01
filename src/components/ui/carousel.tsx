@@ -135,8 +135,9 @@ function Carousel({
 function CarouselContent({
   className,
   children,
+  showDefaultItem = true,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { showDefaultItem?: boolean }) {
   const { carouselRef, orientation } = useCarousel();
 
   return (
@@ -153,7 +154,9 @@ function CarouselContent({
           { ...props },
         )}
       >
-        <CarouselItem className="basis-4 sm:basis-6 md:basis-8 lg:basis-12 xl:basis-16 2xl:basis-24" />
+        {showDefaultItem && (
+          <CarouselItem className="basis-4 sm:basis-6 md:basis-8 lg:basis-12 xl:basis-16 2xl:basis-24" />
+        )}
         {children}
       </div>
     </div>

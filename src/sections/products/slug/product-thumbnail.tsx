@@ -1,3 +1,5 @@
+// @/sections/products/slug/product-thumbnail.tsx
+
 "use client";
 
 import * as React from "react";
@@ -10,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { SelectProduct } from "@/db/schemas";
 
 const images = [
   "https://www.fffuel.co/images/dddepth-preview/dddepth-248.jpg",
@@ -19,7 +22,7 @@ const images = [
   "https://www.fffuel.co/images/dddepth-preview/dddepth-012.jpg",
 ];
 
-export default function CarouselWithThumbs() {
+export const ProductThumbnail = ({ product }: { product: SelectProduct }) => {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
 
@@ -39,41 +42,41 @@ export default function CarouselWithThumbs() {
     (index: number) => {
       api?.scrollTo(index);
     },
-    [api]
+    [api],
   );
 
   return (
-    <div className="mx-auto max-w-xs">
-      <Carousel className="w-full max-w-xs" setApi={setApi}>
-        <CarouselContent>
-          {images.map((image) => (
-            <CarouselItem key={image}>
+    <div className="mx-auto section max-w-2xl bg-red-500">
+      <Carousel className="w-full" setApi={setApi}>
+        <CarouselContent showDefaultItem={false}>
+          {product.images?.map((image) => (
+            <CarouselItem className="basis-full" key={image.url}>
               <img
                 alt="dddepth-248"
                 className="size-full rounded-xl object-cover"
-                src={image}
+                src={image.url}
               />
             </CarouselItem>
           ))}
         </CarouselContent>
       </Carousel>
 
-      <Carousel className="mt-4 w-full max-w-xs">
+      <Carousel className="mt-4 w-full">
         <div className="mask-x-from-90%">
           <CarouselContent className="my-1 flex">
-            {images.map((image, index) => (
+            {product.images?.map((image, index) => (
               <CarouselItem
                 className={cn(
                   "basis-1/4 cursor-pointer transition-opacity",
-                  current === index + 1 ? "opacity-100" : "opacity-50"
+                  current === index + 1 ? "opacity-100" : "opacity-50",
                 )}
-                key={image}
+                key={image.url}
                 onClick={() => handleThumbClick(index)}
               >
                 <img
                   alt="dddepth-248"
                   className="size-full rounded-xl object-cover"
-                  src={image}
+                  src={image.url}
                 />
               </CarouselItem>
             ))}
@@ -84,4 +87,4 @@ export default function CarouselWithThumbs() {
       </Carousel>
     </div>
   );
-}
+};
