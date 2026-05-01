@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export const BentoCategories = () => {
   return (
-    <section className="container mx-auto section py-24 md:py-32">
+    <section className="container mx-auto section py-20">
       <div className="flex items-end justify-between mb-12">
         <div>
           <p className="font-mono text-xs tracking-wide uppercase text-muted-foreground mb-3">

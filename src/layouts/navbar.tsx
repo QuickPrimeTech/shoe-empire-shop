@@ -100,10 +100,8 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 inset-x-0 z-50 border-b section transition-all duration-300",
-          scrolled
-            ? "bg-background/90 backdrop-blur-xl border-border/60 shadow-sm"
-            : "bg-background border-transparent",
+          "sticky bg-transparent top-0 inset-x-0 z-50 border-b section transition-all duration-300",
+          scrolled && "bg-background/90 backdrop-blur-xl",
         )}
       >
         <div className="container mx-auto h-16 flex items-center justify-between">

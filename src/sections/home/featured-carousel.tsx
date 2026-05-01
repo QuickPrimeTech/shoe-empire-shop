@@ -10,7 +10,7 @@ import Image from "next/image";
 
 export const FeaturedCarousel = () => {
   return (
-    <section className="py-24 md:py-32 bg-background overflow-hidden">
+    <section className="py-20 bg-background overflow-hidden">
       {/* Header Area */}
       <div className="container mx-auto px-6 md:px-12 mb-12 flex items-end justify-between">
         <div>
