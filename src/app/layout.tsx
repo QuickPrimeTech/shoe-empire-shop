@@ -6,6 +6,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/layouts/navbar";
 import { Footer } from "@/layouts/footer";
+import { CartSheet } from "@/layouts/cart-sheet";
 
 const jost = Jost({
   variable: "--font-jost",
@@ -44,7 +45,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          {children}
+          <CartSheet />
+        </main>
         <Footer />
       </body>
     </html>

@@ -46,6 +46,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-marquee: marquee 25s linear infinite;
 
   /* Dark shades */
   --color-dark-900: #111111;
@@ -179,5 +180,19 @@
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-100%);
+    }
   }
 }
