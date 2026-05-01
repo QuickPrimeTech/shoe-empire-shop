@@ -15,6 +15,7 @@ import { SelectProduct } from "@/db/schemas";
 import { Image } from "@/components/ui/image";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { X, ZoomIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 /* -------------------------------------------------------------------------- */
 /*                               Zoomable Slide                               */
@@ -140,7 +141,7 @@ function Lightbox({ images, initialIndex, isOpen, onClose }: LightboxProps) {
   return createPortal(
     <div
       className={cn(
-        "fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 transition-opacity duration-300",
+        "fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/50 backdrop-blur-sm transition-opacity duration-300",
         isOpen
           ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none",
@@ -153,13 +154,15 @@ function Lightbox({ images, initialIndex, isOpen, onClose }: LightboxProps) {
       aria-hidden={!isOpen}
     >
       {/* Close */}
-      <button
+      <Button
         onClick={onClose}
-        className="absolute top-4 right-4 z-50 rounded-full bg-white/10 p-2.5 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+        variant={"outline"}
+        size={"icon-lg"}
+        className="absolute top-4 right-4 z-50"
         aria-label="Close full view"
       >
-        <X className="size-6" />
-      </button>
+        <X />
+      </Button>
 
       {/* Main image carousel */}
       <div className="w-full max-w-6xl px-4 md:px-16">

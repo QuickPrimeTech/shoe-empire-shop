@@ -323,12 +323,12 @@ function A11yPanel() {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
               Theme
             </h3>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 bg-muted/20 rounded-2xl px-2 py-1 border">
               {THEMES.map((t) => (
                 <Button
                   key={t.value}
                   onClick={() => setTheme(t.value)}
-                  variant={theme === t.value ? "default" : "secondary"}
+                  variant={theme === t.value ? "secondary" : "ghost"}
                 >
                   <t.icon />
                   <span className="text-xs font-medium">{t.label}</span>
@@ -344,7 +344,7 @@ function A11yPanel() {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
               Text Size
             </h3>
-            <div className="flex items-center gap-3 bg-muted rounded-2xl p-1.5">
+            <div className="flex items-center gap-3 bg-muted/20 rounded-2xl px-2 py-1 border w-fit">
               {(
                 [
                   { key: "sm" as const, icon: Minus },
@@ -355,7 +355,7 @@ function A11yPanel() {
                 <Button
                   key={item.key}
                   onClick={() => setFontSize(item.key)}
-                  variant={fontSize === item.key ? "default" : "secondary"}
+                  variant={fontSize === item.key ? "secondary" : "ghost"}
                 >
                   <item.icon className="size-4" />
                   {item.key === "sm"
@@ -393,7 +393,9 @@ function A11yPanel() {
 
       <div className="px-6 py-4 border-t">
         <SheetClose asChild>
-          <Button className="w-full">Done</Button>
+          <Button size={"xl"} className="w-full">
+            Done
+          </Button>
         </SheetClose>
       </div>
     </div>
