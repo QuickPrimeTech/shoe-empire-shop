@@ -1,11 +1,5 @@
 // @/db/schemas/product-variants.ts
-import {
-  pgTable,
-  uuid,
-  text,
-  jsonb,
-  boolean
-} from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, jsonb, boolean } from "drizzle-orm/pg-core";
 import { ProductImage, products } from "./products";
 import { timestamps } from "./common";
 
@@ -14,7 +8,10 @@ export const productVariants = pgTable("product_variants", {
   id: uuid("id").primaryKey().defaultRandom(),
 
   productId: uuid("product_id")
-    .references(() => products.id)
+    .references(() => products.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    })
     .notNull(),
 
   color: text("color").notNull(), // "Black"

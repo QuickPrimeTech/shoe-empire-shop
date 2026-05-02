@@ -1,5 +1,5 @@
 // @/db/schemas/products.ts
-import { pgTable, uuid, text, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, boolean } from "drizzle-orm/pg-core";
 import { categories } from "./categories";
 import { timestamps } from "./common";
 
@@ -17,14 +17,16 @@ export const products = pgTable("products", {
   slug: text("slug").notNull().unique(),
 
   // Details
-  description: text("description"),
-  brand: text("brand"),
+  description: text("description").notNull(),
+  brand: text("brand").notNull(),
 
   //Adding categoryId as a foreign key reference to categories table
-  categoryId: uuid("category_id").references(() => categories.id),
+  categoryId: uuid("category_id").references(() => categories.id, {
+    onUpdate: "cascade",
+    onDelete: "set null",
+  }),
 
   // Storing Ksh as an integer to avoid floating-point math errors
-  price: integer("price").notNull(),
   isPublished: boolean("is_published").notNull().default(true),
 
   ...timestamps,

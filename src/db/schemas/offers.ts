@@ -19,7 +19,10 @@ export const offers = pgTable("offers", {
   discountValue: integer("discount_value").notNull(),
   minOrderAmount: integer("min_order_amount").default(0),
   //Adding productId as a foreign key reference to products table
-  productId: uuid("product_id").references(() => products.id),
+  productId: uuid("product_id").references(() => products.id, {
+    onUpdate: "cascade",
+    onDelete: "cascade",
+  }),
   // Date-based logic
   startDate: timestamp("start_date", { withTimezone: true }).notNull(),
   endDate: timestamp("end_date", { withTimezone: true }).notNull(),

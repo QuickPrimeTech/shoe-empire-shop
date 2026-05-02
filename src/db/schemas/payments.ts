@@ -6,7 +6,10 @@ import { timestamps } from "./common";
 export const payments = pgTable("payments", {
   id: uuid("id").primaryKey().defaultRandom(),
   orderId: uuid("order_id")
-    .references(() => orders.id)
+    .references(() => orders.id, {
+      onUpdate: "cascade",
+      onDelete: "cascade",
+    })
     .notNull(),
   status: text("status").notNull().default("pending"),
   method: text("method").notNull().default("mpesa"),

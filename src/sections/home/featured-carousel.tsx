@@ -35,7 +35,7 @@ export const FeaturedCarousel = ({
                 <Link href={`/products/${p.slug}`}>
                   <div className="relative aspect-square bg-muted rounded-xl overflow-hidden group">
                     <Image
-                      src={p.images[0].url}
+                      src={null}
                       alt={p.name}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
@@ -43,7 +43,7 @@ export const FeaturedCarousel = ({
                   </div>
                   <div className="py-4 flex justify-between">
                     <h3 className="font-medium">{p.name}</h3>
-                    <p className="font-medium">Ksh {p.price}</p>
+                    {/* <p className="font-medium">Ksh {p.price}</p> */}
                   </div>
                 </Link>
               </CarouselItem>

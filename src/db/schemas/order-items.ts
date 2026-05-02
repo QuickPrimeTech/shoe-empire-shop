@@ -10,7 +10,10 @@ export const orderItems = pgTable("order_items", {
     .references(() => orders.id)
     .notNull(),
   productId: uuid("product_id")
-    .references(() => products.id)
+    .references(() => products.id, {
+      onUpdate: "no action",
+      onDelete: "no action",
+    })
     .notNull(),
 
   // Snapshots (We save these in case the product price or name changes later)

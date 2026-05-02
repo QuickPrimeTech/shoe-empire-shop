@@ -1,4 +1,5 @@
-// @/app/products/[slug]/page.tsx
+// @/app/products/[brand]/[color]/page.tsx
+
 import { db } from "@/index";
 import { products } from "@/db/schemas/products";
 import { eq } from "drizzle-orm";
