@@ -6,7 +6,6 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/layouts/navbar";
 import { Footer } from "@/layouts/footer";
-import { CartSheet } from "@/layouts/cart-sheet";
 import { ThemeProvider } from "@/components/theme-provider";
 import NextTopLoader from "nextjs-toploader";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -58,10 +57,7 @@ export default function RootLayout({
           <NextTopLoader showSpinner={false} color="var(--primary)" />
           <TooltipProvider>
             <Navbar />
-            <main className="flex-1">
-              {children}
-              <CartSheet />
-            </main>
+            <main className="flex-1">{children}</main>
             <Footer />
             <Toaster richColors position="top-right" />
           </TooltipProvider>

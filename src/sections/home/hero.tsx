@@ -47,7 +47,7 @@ export const Hero = () => {
   return (
     <section
       className={cn(
-        "relative md:py-16 min-h-screen overflow-hidden",
+        "relative md:py-10 min-h-screen overflow-hidden",
         !isMobile && "section",
       )}
     >

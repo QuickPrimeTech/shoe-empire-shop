@@ -13,7 +13,7 @@ import {
   SheetFooter,
   SheetClose,
 } from "../ui/sheet";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { CartItemCard } from "./cart-item";
 import { formatPrice } from "@/helpers/formatters";
 import Link from "next/link";
@@ -32,9 +32,9 @@ export function CartSheet() {
           variant="ghost"
           size="icon"
           title="view cart"
-          className="relative h-10 w-10 rounded-full hover:bg-accent transition-colors"
+          className="relative size-10 rounded-full hover:bg-accent transition-colors"
         >
-          <ShoppingBag className="h-5 w-5" />
+          <ShoppingBag className="size-5" />
           <span className="absolute top-1 right-0 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-sm ring-2 ring-background animate-in zoom-in-50 duration-200">
             {totalItems > 99 ? "99+" : totalItems}
           </span>
@@ -70,19 +70,20 @@ export function CartSheet() {
               </p>
             </div>
             <SheetClose asChild>
-              <Button variant="outline" className="mt-2 rounded-full px-6">
+              <Button variant="outline" size={"xl"} className="mt-2">
                 Continue Shopping
               </Button>
             </SheetClose>
           </div>
         ) : (
           <>
-            <ScrollArea className="flex-1 bg-muted rounded-b-xl">
+            <ScrollArea className="h-0 flex-1 bg-muted rounded-b-xl">
               <div className="flex flex-col p-4 gap-5">
                 {cartItems.map((cartItem) => (
                   <CartItemCard key={cartItem.id} cartItem={cartItem} />
                 ))}
               </div>
+              <ScrollBar />
             </ScrollArea>
 
             {/* Summary */}

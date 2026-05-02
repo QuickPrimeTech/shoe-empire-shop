@@ -24,7 +24,6 @@ import {
   Moon,
   Monitor,
   Search,
-  Heart,
   Accessibility,
   Type,
   Minus,
@@ -35,14 +34,13 @@ import { RiMenu2Line } from "react-icons/ri";
 import { useAccessibility } from "@/store/accessibility";
 import { Logo } from "@/components/logo";
 import { CartSheet } from "@/components/cart/cart-sheet";
+import { WishlistSheet } from "@/components/cart/wishlist-sheet";
 
 /* ─── NAV LINKS ─── */
 const NAV = [
   { label: "New", href: "/new" },
   { label: "Men", href: "/men" },
   { label: "Women", href: "/women" },
-  { label: "Kids", href: "/kids" },
-  { label: "Sale", href: "/sale", accent: true },
 ];
 
 /* ─── THEME OPTIONS ─── */
@@ -134,15 +132,13 @@ export function Navbar() {
                 href={item.href}
                 className={cn(
                   "relative px-4 py-2 text-sm font-medium rounded-lg transition-colors",
-                  item.accent
-                    ? "text-primary hover:text-primary/85"
-                    : pathname === item.href
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                  pathname === item.href
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary",
                 )}
               >
                 {item.label}
-                {pathname === item.href && !item.accent && (
+                {pathname === item.href && (
                   <motion.div
                     layoutId="nav-pill"
                     className="absolute inset-0 bg-secondary rounded-lg -z-10"
@@ -167,9 +163,7 @@ export function Navbar() {
             >
               <Accessibility className="size-5" />
             </button>
-            <button className="p-2 hover:bg-secondary rounded-full transition hidden sm:block">
-              <Heart className="size-5" />
-            </button>
+            <WishlistSheet />
             <CartSheet />
           </div>
         </div>
@@ -261,11 +255,9 @@ function MobileNavContent({ pathname }: { pathname: string }) {
                   href={item.href}
                   className={cn(
                     "flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-colors",
-                    item.accent
-                      ? "text-primary hover:bg-background"
-                      : pathname === item.href
-                        ? "bg-secondary text-foreground"
-                        : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                    pathname === item.href
+                      ? "bg-secondary text-foreground"
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                   )}
                 >
                   {item.label}

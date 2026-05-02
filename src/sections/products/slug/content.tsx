@@ -125,6 +125,7 @@ export const ProductContent = ({ product }: ProductContentProps) => {
                       key={size.size}
                       size={"sm"}
                       onClick={() => setSelectedSize(size)}
+                      className="w-24"
                       variant={
                         selectedSize?.size === size.size ? "default" : "outline"
                       }
