@@ -149,7 +149,7 @@ function CarouselContent({
       <div
         className={cn(
           "flex",
-          orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
+          orientation === "horizontal" ? "-ml-4" : "pl-4 -mt-4 flex-col",
           className,
         )}
         {...props}

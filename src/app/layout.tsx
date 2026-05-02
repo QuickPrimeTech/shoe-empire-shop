@@ -10,6 +10,7 @@ import { CartSheet } from "@/layouts/cart-sheet";
 import { ThemeProvider } from "@/components/theme-provider";
 import NextTopLoader from "nextjs-toploader";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 const jost = Jost({
   variable: "--font-jost",
@@ -62,6 +63,7 @@ export default function RootLayout({
               <CartSheet />
             </main>
             <Footer />
+            <Toaster richColors />
           </TooltipProvider>
         </ThemeProvider>
       </body>

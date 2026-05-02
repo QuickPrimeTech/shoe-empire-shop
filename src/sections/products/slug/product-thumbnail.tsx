@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,6 @@ import {
 } from "@/components/ui/carousel";
 import { SelectProduct } from "@/db/schemas";
 import { Image } from "@/components/ui/image";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { X, ZoomIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -78,11 +76,11 @@ function ZoomableSlide({ children, className, onClick }: ZoomableSlideProps) {
       {/* Zoom hint */}
       <div
         className={cn(
-          "absolute top-3 right-3 pointer-events-none rounded-full bg-white/80 backdrop-blur-sm p-2 shadow-sm transition-opacity duration-200",
+          "absolute top-3 right-3 pointer-events-none rounded-full bg-card/80 backdrop-blur-sm p-2 shadow-sm transition-opacity duration-200",
           isZooming ? "opacity-0" : "opacity-100",
         )}
       >
-        <ZoomIn className="size-4 text-gray-700" />
+        <ZoomIn className="size-4" />
       </div>
     </div>
   );
@@ -178,7 +176,7 @@ function Lightbox({ images, initialIndex, isOpen, onClose }: LightboxProps) {
                 className="relative aspect-4/3 w-full"
               >
                 <Image
-                  className="rounded-lg object-contain"
+                  className="rounded-md object-contain"
                   src={image.url}
                   alt={image.altText}
                   fill
@@ -207,7 +205,7 @@ function Lightbox({ images, initialIndex, isOpen, onClose }: LightboxProps) {
                 key={image.url}
                 onClick={() => api?.scrollTo(idx)}
                 className={cn(
-                  "relative aspect-square w-14 md:w-16 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all",
+                  "relative aspect-square w-14 md:w-16 shrink-0 overflow-hidden rounded-md border-2 transition-all",
                   lightboxCurrent === idx
                     ? "border-white opacity-100 scale-105"
                     : "border-transparent opacity-50 hover:opacity-80",
@@ -240,7 +238,6 @@ export const ProductThumbnail = ({
 }: {
   images: SelectProduct["images"];
 }) => {
-  const isMobile = useIsMobile();
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
@@ -281,7 +278,7 @@ export const ProductThumbnail = ({
               key={image.url}
             >
               <ZoomableSlide
-                className="absolute inset-0 rounded-xl"
+                className="absolute inset-0 rounded-xl overflow-hidden"
                 onClick={() => setLightboxOpen(true)}
               >
                 <Image
@@ -299,14 +296,16 @@ export const ProductThumbnail = ({
         {images.length > 1 && (
           <>
             <CarouselPrevious
-              size={isMobile ? "icon-sm" : "icon"}
-              className="left-3 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm shadow-md border-gray-200 hover:bg-white hover:text-gray-900"
+              size={"icon"}
+              className="left-3 top-1/2 -translate-y-1/2 "
               aria-label="Previous image"
+              title="Previous image"
             />
             <CarouselNext
-              size={isMobile ? "icon-sm" : "icon"}
-              className="right-3 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm shadow-md border-gray-200 hover:bg-white hover:text-gray-900"
+              size={"icon"}
+              className="right-3 top-1/2 -translate-y-1/2"
               aria-label="Next image"
+              title="Next image"
             />
           </>
         )}

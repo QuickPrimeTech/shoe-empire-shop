@@ -4,16 +4,19 @@ import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { SelectProduct } from "@/db/schemas";
 import { ProductThumbnail } from "./product-thumbnail";
+import { Button } from "@/components/ui/button";
+import { Heart, Minus, Plus, ShoppingBag } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface ProductContentProps {
   product: SelectProduct;
 }
 
 export const ProductContent = ({ product }: ProductContentProps) => {
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  // const [selectedColor, setSelectedColor] = useState<string | null>(
-  //   product.colors?.[0] ?? null,
-  // );
+  const [selectedSize, setSelectedSize] = useState<
+    SelectProduct["sizes"][0] | null
+  >(null);
   const [quantity, setQuantity] = useState(1);
 
   const formatPrice = (price: number) => {
@@ -24,8 +27,17 @@ export const ProductContent = ({ product }: ProductContentProps) => {
     }).format(price);
   };
 
-  // const isOutOfStock = product.stockQuantity <= 0;
-  // const isLowStock = product.stockQuantity > 0 && product.stockQuantity <= 5;
+  const isOutOfStock = selectedSize ? parseInt(selectedSize.size) < 1 : false;
+  const isLowStock = selectedSize ? parseInt(selectedSize.size) < 5 : false;
+
+  const addToCart = () => {
+    toast.error(`Please select a size`);
+    if (!selectedSize) {
+      toast.error(`Please select a size`);
+    }
+  };
+
+  const addToWishlist = () => {};
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
@@ -51,20 +63,18 @@ export const ProductContent = ({ product }: ProductContentProps) => {
 
             <div className="flex items-center gap-3 pt-1">
               <span className="text-2xl md:text-3xl font-bold text-foreground">
-                {/* {formatPrice(product.price)} */}
+                {formatPrice(product.price)}
               </span>
 
-              {/* {isOutOfStock ? (
+              {isOutOfStock ? (
                 <Badge variant="destructive">Out of Stock</Badge>
               ) : isLowStock ? (
                 <Badge variant="secondary">
-                  Only {product.stockQuantity} left
+                  Only {selectedSize?.stock} left
                 </Badge>
               ) : (
-                <Badge className="bg-green-600 text-white dark:bg-green-500">
-                  In Stock
-                </Badge>
-              )} */}
+                <Badge variant={"success"}>In Stock</Badge>
+              )}
             </div>
           </div>
 
@@ -77,95 +87,81 @@ export const ProductContent = ({ product }: ProductContentProps) => {
 
           <Separator />
 
-          {/* Colors */}
-          {/* {product.colors?.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="font-medium">Color</span>
-                <span className="text-muted-foreground">
-                  {selectedColor || "Select a color"}
-                </span>
-              </div>
+          <div className="space-y-4">
+            {/* Sizes */}
+            {product.sizes?.length > 0 && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <p className="font-medium">
+                    Size{" "}
+                    <span className="text-muted-foreground">
+                      (
+                      {selectedSize
+                        ? `EU ${selectedSize.size}`
+                        : "Select a size"}
+                      )
+                    </span>
+                  </p>
+                </div>
 
-              <div className="flex flex-wrap gap-2">
-                {product.colors.map((color) => (
-                  <Button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    variant={selectedColor === color ? "default" : "outline"}
-                  >
-                    {color}
-                  </Button>
-                ))}
+                <div className="flex w-full flex-wrap gap-2">
+                  {product.sizes.map((size) => (
+                    <Button
+                      key={size.size}
+                      size={"sm"}
+                      onClick={() => setSelectedSize(size)}
+                      variant={
+                        selectedSize?.size === size.size ? "default" : "outline"
+                      }
+                    >
+                      {size.size}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )} */}
-
-          {/* Sizes */}
-          {/* {product.availableSizes?.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="font-medium">Size</span>
-                <span className="text-muted-foreground">
-                  {selectedSize ? `EU ${selectedSize}` : "Select a size"}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                {product.availableSizes.map((size) => (
-                  <Button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    variant={selectedSize === size ? "default" : "outline"}
-                  >
-                    {size}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )} */}
-
-          {/* Quantity */}
-          <div className="space-y-4 pt-2">
-            <div className="flex items-center gap-4">
+            )}
+            <div className="flex flex-col justify-center gap-2">
               <span className="text-sm font-medium">Quantity</span>
 
-              <div className="flex items-center border rounded-lg">
-                <button
+              <div className="flex items-center border w-fit rounded-lg overflow-hidden">
+                <Button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   disabled={quantity <= 1}
-                  className="w-11 h-11 flex items-center justify-center text-muted-foreground hover:bg-accent disabled:opacity-40 rounded-l-lg"
+                  className="rounded-none"
+                  variant={"ghost"}
+                  aria-label={`Decrease quantity to ${quantity - 1}`}
+                  title={`Decrease quantity to ${quantity - 1}`}
                 >
-                  −
-                </button>
+                  <Minus />
+                </Button>
 
-                <span className="w-14 h-11 flex items-center justify-center text-sm font-semibold border-x tabular-nums">
+                <span className="w-12 h-full flex items-center justify-center text-sm font-semibold border-x tabular-nums">
                   {quantity}
                 </span>
 
-                {/* <button
-                  onClick={() =>
-                    setQuantity((q) => Math.min(product.stockQuantity, q + 1))
-                  }
-                  disabled={quantity >= product.stockQuantity || isOutOfStock}
-                  className="w-11 h-11 flex items-center justify-center text-muted-foreground hover:bg-accent disabled:opacity-40 rounded-r-lg"
+                <Button
+                  className="rounded-none"
+                  variant={"ghost"}
+                  aria-label={`Decrease quantity to ${quantity + 1}`}
+                  title={`Increase quantity to ${quantity + 1}`}
+                  onClick={() => setQuantity((q) => q + 1)}
                 >
-                  +
-                </button> */}
+                  <Plus />
+                </Button>
               </div>
             </div>
+          </div>
 
-            {/* CTA */}
-            <div className="flex flex-col gap-3">
-              {/* <Button size="xl" disabled={isOutOfStock}>
-                {isOutOfStock ? "Out of Stock" : "Add to Cart"}{" "}
-                <ShoppingBag className="size-5 ml-1.5" />
-              </Button>
+          {/* CTA */}
+          <div className="flex flex-col gap-3 mt-5">
+            <Button size="xl" disabled={isOutOfStock} onClick={addToCart}>
+              {isOutOfStock ? "Out of Stock" : "Add to Cart"}{" "}
+              <ShoppingBag className="size-5 ml-1.5" />
+            </Button>
 
-              <Button size="xl" variant="outline" disabled={isOutOfStock}>
-                Add to Wishlist <Heart className="size-5 ml-1.5" />
-              </Button> */}
-            </div>
+            <Button size="xl" variant="outline" disabled={isOutOfStock}>
+              Add to Wishlist <Heart className="size-5 ml-1.5" />
+            </Button>
           </div>
 
           {/* Trust badges */}
@@ -205,19 +201,12 @@ export const ProductContent = ({ product }: ProductContentProps) => {
 
             <div className="flex justify-between">
               <span className="text-muted-foreground">Availability</span>
-              {/* <span className="font-medium">
+              <span className="font-medium">
                 {isOutOfStock
                   ? "Unavailable"
-                  : `${product.stockQuantity} in stock`}
-              </span> */}
+                  : `${selectedSize?.stock} in stock`}
+              </span>
             </div>
-            {/* 
-            {product.colors?.length > 0 && (
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Colors</span>
-                <span className="font-medium">{product.colors.join(", ")}</span>
-              </div>
-            )} */}
           </div>
         </div>
       </div>
