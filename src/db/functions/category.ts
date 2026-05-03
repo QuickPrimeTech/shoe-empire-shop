@@ -25,3 +25,15 @@ export async function getCategoriesWithCount() {
 
   return result;
 }
+
+export async function getCategoryFromSlug(
+  slug: string,
+): Promise<SelectCategory | null> {
+  const rows = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.slug, slug))
+    .limit(1);
+
+  return rows[0] ?? null;
+}
