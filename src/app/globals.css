@@ -49,12 +49,12 @@
   --animate-marquee: marquee 25s linear infinite;
 
   /* Heading sizes */
-  --text-heading-1: 72px;
-  --text-heading-1--line-height: 78px;
+  --text-heading-1: 58px;
+  --text-heading-1--line-height: 64px;
   --text-heading-1--font-weight: 700;
 
-  --text-heading-2: 56px;
-  --text-heading-2--line-height: 60px;
+  --text-heading-2: 40px;
+  --text-heading-2--line-height: 48px;
   --text-heading-2--font-weight: 700;
 
   --text-heading-3: 24px;

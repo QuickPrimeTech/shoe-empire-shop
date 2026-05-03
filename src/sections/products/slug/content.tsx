@@ -22,6 +22,7 @@ import { formatPrice } from "@/helpers/formatters";
 import { cn } from "@/lib/utils";
 import { ShareButton } from "@/components/ui/share-button";
 import { ProductWithOptionalOffer } from "@/types/product";
+import { useCartUIStore } from "@/store/cart-ui";
 
 interface ProductContentProps {
   product: ProductWithOptionalOffer;
@@ -37,6 +38,8 @@ export const ProductContent = ({ product }: ProductContentProps) => {
   const isInWishlist = useWishlistStore((state) =>
     state.isInWishlist(product.id),
   );
+
+  const openCart = useCartUIStore((state) => state.setOpen);
 
   const hasOffer = !!product.offer;
 
@@ -74,7 +77,7 @@ export const ProductContent = ({ product }: ProductContentProps) => {
     size: product.sizes[0]?.size ?? "",
   };
 
-  const addToCart = () => {
+  const addToCart = (type: "Buy" | "cart") => {
     if (!selectedSize) {
       toast.error("Please select a size", {
         description: `Select a size for ${product.name}`,
@@ -89,6 +92,9 @@ export const ProductContent = ({ product }: ProductContentProps) => {
       size: selectedSize,
       quantity,
     });
+    if (type === "Buy") {
+      openCart(true);
+    }
     toast.success("Added to cart");
   };
 
@@ -164,7 +170,7 @@ export const ProductContent = ({ product }: ProductContentProps) => {
                 }}
               />
             </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-foreground">
+            <h1 className="text-heading-2 font-bold tracking-tight leading-[1.1] text-foreground">
               {product.name}
             </h1>
 
@@ -308,7 +314,9 @@ export const ProductContent = ({ product }: ProductContentProps) => {
             <Button
               size="xl"
               disabled={isOutOfStock}
-              onClick={addToCart}
+              onClick={() => {
+                addToCart("Buy");
+              }}
               className={cn(
                 hasOffer && "bg-destructive hover:bg-destructive/90",
               )}
@@ -320,7 +328,7 @@ export const ProductContent = ({ product }: ProductContentProps) => {
               size="xl"
               variant={"secondary"}
               disabled={isOutOfStock}
-              onClick={addToCart}
+              onClick={() => addToCart("cart")}
             >
               {isOutOfStock ? "Out of Stock" : "Add to Cart"}
               <ShoppingBag className="size-5 ml-1.5" />

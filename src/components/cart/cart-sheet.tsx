@@ -17,16 +17,18 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { CartItemCard } from "./cart-item";
 import { formatPrice } from "@/helpers/formatters";
 import Link from "next/link";
+import { useCartUIStore } from "@/store/cart-ui";
 
 export function CartSheet() {
   const totalItems = useCartStore((state) => state.getTotalItems());
   const totalPrice = useCartStore((state) => state.getTotalPrice());
   const cartItems = useCartStore((state) => state.items);
-
+  const open = useCartUIStore((state) => state.open);
+  const setOpen = useCartUIStore((state) => state.setOpen);
   const isEmpty = cartItems.length === 0;
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"

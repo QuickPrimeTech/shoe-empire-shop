@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
     // Optional: Boost quality globally
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     formats: ["image/avif", "image/webp"],
+    qualities: [100, 75, 95],
   },
   allowedDevOrigins: ["lz62klsuhtff7kjv2ytqb3e74u.srv.us"],
 };
