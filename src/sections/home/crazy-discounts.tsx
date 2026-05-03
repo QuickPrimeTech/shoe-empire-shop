@@ -7,15 +7,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { SelectOffer, SelectProduct } from "@/db/schemas";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
-
-export type ProductWithOffer = SelectProduct & {
-  offer: SelectOffer;
-  discountedPrice: number;
-};
+import { ProductWithOffer } from "@/types/product";
 
 export const CrazyDiscounts = ({ offers }: { offers: ProductWithOffer[] }) => {
   return (

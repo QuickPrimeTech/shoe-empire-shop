@@ -1,5 +1,4 @@
 // @/sections/home/latest-products.tsx
-
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,11 +8,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { SelectProduct } from "@/db/schemas";
+import { ProductWithOptionalOffer } from "@/types/product";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
-export const LatestProducts = ({ products }: { products: SelectProduct[] }) => {
+export const LatestProducts = ({
+  products,
+}: {
+  products: ProductWithOptionalOffer[];
+}) => {
   return (
     <section
       id="latest-products"
@@ -45,7 +48,7 @@ export const LatestProducts = ({ products }: { products: SelectProduct[] }) => {
               key={p.id}
               className="basis-7/10 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
             >
-              <ProductCard product={p} />
+              <ProductCard product={p} offer={p.offer ?? undefined} />
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -55,10 +58,10 @@ export const LatestProducts = ({ products }: { products: SelectProduct[] }) => {
       {/* Mobile CTA */}
       <div className="mt-8 flex justify-center md:hidden">
         <Button size={"xl"} asChild variant="outline">
-          <a href="/collection/latest-products">
+          <Link href="/collection/latest-products">
             View all latest products
             <ArrowUpRight className="h-4 w-4 ml-1" />
-          </a>
+          </Link>
         </Button>
       </div>
     </section>

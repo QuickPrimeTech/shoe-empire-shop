@@ -6,6 +6,7 @@ import { Image } from "@/components/ui/image";
 import { Button } from "@/components/ui/button";
 import { SelectCategory } from "@/db/schemas";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 type BentoCategoriesProps = {
   categories: SelectCategory[];
@@ -47,9 +48,9 @@ export const BentoCategories = ({ categories }: BentoCategoriesProps) => {
             </h2>
           </div>
           <Button asChild variant="link" className="hidden md:inline-flex">
-            <a href="/categories">
+            <Link href="/categories">
               View all <ArrowUpRight className="h-4 w-4" />
-            </a>
+            </Link>
           </Button>
         </div>
 

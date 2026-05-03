@@ -2,7 +2,8 @@
 import { db } from "@/index";
 import { products, SelectProduct } from "@/db/schemas/products";
 import { and, desc, eq, gte, lte } from "drizzle-orm";
-import { offers } from "@/db/schemas/offers";
+import { offers, SelectOffer } from "@/db/schemas/offers";
+import { ProductWithOptionalOffer } from "@/types/product";
 
 export async function getProducts(): Promise<SelectProduct[]> {
   // 1. Fetch base data
@@ -10,18 +11,50 @@ export async function getProducts(): Promise<SelectProduct[]> {
   return productsData;
 }
 
-export async function getLatestProducts(): Promise<SelectProduct[]> {
+export function getDiscountedPrice(price: number, offer?: SelectOffer | null) {
+  if (!offer) return price;
+
+  const discounted =
+    offer.discountType === "percentage"
+      ? price - (price * offer.discountValue) / 100
+      : price - offer.discountValue;
+
+  return Math.max(discounted, 0);
+}
+
+export async function getLatestProducts(): Promise<ProductWithOptionalOffer[]> {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  return db
-    .select()
+  const now = new Date();
+
+  const rows = await db
+    .select({
+      product: products,
+      offer: offers,
+    })
     .from(products)
+    .leftJoin(
+      offers,
+      and(
+        eq(products.id, offers.productId),
+        eq(offers.isActive, true),
+        lte(offers.startDate, now),
+        gte(offers.endDate, now),
+      ),
+    )
     .where(gte(products.createdAt, thirtyDaysAgo))
     .orderBy(desc(products.createdAt))
     .limit(8);
-}
 
+  return rows.map(({ product, offer }) => {
+    return {
+      ...product,
+      offer,
+      discountedPrice: getDiscountedPrice(product.price, offer),
+    };
+  });
+}
 export async function getDiscountedProducts() {
   const now = new Date();
 
@@ -38,7 +71,8 @@ export async function getDiscountedProducts() {
         lte(offers.startDate, now),
         gte(offers.endDate, now),
       ),
-    );
+    )
+    .limit(8);
 
   return rows.map(({ product, offer }) => {
     let discountedPrice = product.price;
