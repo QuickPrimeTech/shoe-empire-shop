@@ -1,13 +1,14 @@
 // @/db/seeds/products.ts
 
 import { db } from "@/index"; // Path to your drizzle db instance
-import { InsertProduct, products } from "@/db/schemas"; // Import the products schema
+import { categories, InsertProduct, products } from "@/db/schemas"; // Import the products schema
 
-const seedShoes: InsertProduct[] = [
+const seedShoes: (InsertProduct & { categorySlug: string })[] = [
   {
     name: "Air Jordan 1 Charcoal Gray",
     slug: "air-jordan-1-charcoal-gray",
     price: 4500,
+    categorySlug: "basketball-shoes",
     description:
       "The Air Jordan 1 is the iconic sneaker that started it all. Premium leather upper and the iconic Wings logo.",
     brand: "Nike",
@@ -51,6 +52,7 @@ const seedShoes: InsertProduct[] = [
     description:
       "The Air Jordan 1 is the iconic sneaker that started it all. Premium leather upper and the iconic Wings logo.",
     brand: "Nike",
+    categorySlug: "basketball-shoes",
     images: [
       {
         url: "https://res.cloudinary.com/quick-prime-tech/image/upload/v1777726051/imgi_36_UNCLow2_oq7few.jpg",
@@ -80,15 +82,38 @@ const seedShoes: InsertProduct[] = [
 ];
 
 export default async function seed() {
-  console.log("Starting Seeding Shoe Empire products...");
+  console.log("🌱 Seeding products...");
+
   try {
-    console.log("Clearing existing products...");
-    //Deleting all the data before seeding
     await db.delete(products);
-    console.log("Inserting new products...");
-    await db.insert(products).values(seedShoes);
-    console.log("✅ Seeding completed successfully!");
+
+    // 1. Fetch all categories
+    const allCategories = await db.select().from(categories);
+
+    // 2. Create lookup map
+    const categoryMap = new Map(allCategories.map((cat) => [cat.slug, cat.id]));
+
+    // 3. Transform products
+    const finalProducts: InsertProduct[] = seedShoes.map(
+      ({ categorySlug, ...product }) => {
+        const categoryId = categoryMap.get(categorySlug);
+
+        if (!categoryId) {
+          throw new Error(`❌ Category not found for slug: ${categorySlug}`);
+        }
+
+        return {
+          ...product,
+          categoryId,
+        };
+      },
+    );
+
+    // 4. Insert
+    await db.insert(products).values(finalProducts);
+
+    console.log("✅ Products seeded");
   } catch (error) {
-    console.error("❌ Seeding failed:", error);
+    console.error("❌ Product seed failed:", error);
   }
 }

@@ -1,14 +1,15 @@
 // @/sections/home/bento-categories.tsx
-
 "use client";
-
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { categories } from "@/data/products";
 import { Image } from "@/components/ui/image";
 import { Button } from "@/components/ui/button";
+import { SelectCategory } from "@/db/schemas";
 
-export const BentoCategories = () => {
+type BentoCategoriesProps = {
+  categories: SelectCategory[];
+};
+export const BentoCategories = ({ categories }: BentoCategoriesProps) => {
   return (
     <section className="container mx-auto section py-20">
       <div className="flex items-end justify-between mb-12">
@@ -38,7 +39,7 @@ export const BentoCategories = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ delay: i * 0.08, duration: 0.7 }}
-            className={`group relative overflow-hidden rounded-md bg-secondary ${cat.span} aspect-square lg:aspect-auto`}
+            className={`group relative overflow-hidden rounded-md bg-secondary aspect-square lg:aspect-auto`}
           >
             <Image
               src={cat.image}
