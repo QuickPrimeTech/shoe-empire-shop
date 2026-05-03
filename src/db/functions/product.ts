@@ -3,7 +3,7 @@ import { db } from "@/index";
 import { products, SelectProduct } from "@/db/schemas/products";
 import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { offers, SelectOffer } from "@/db/schemas/offers";
-import { ProductWithOptionalOffer } from "@/types/product";
+import { LimitedProduct, ProductWithOptionalOffer } from "@/types/product";
 
 export async function getProducts(): Promise<SelectProduct[]> {
   // 1. Fetch base data
@@ -132,4 +132,49 @@ export async function getProductBySlug(
     offer,
     discountedPrice: getDiscountedPrice(product.price, offer),
   };
+}
+
+export async function getLimitedProducts(): Promise<LimitedProduct[]> {
+  const now = new Date();
+
+  const rows = await db
+    .select({
+      product: products,
+      offer: offers,
+    })
+    .from(products)
+    .leftJoin(
+      offers,
+      and(
+        eq(products.id, offers.productId),
+        eq(offers.isActive, true),
+        lte(offers.startDate, now),
+        gte(offers.endDate, now),
+      ),
+    )
+    .limit(8);
+
+  const grouped = new Map<string, LimitedProduct>();
+
+  for (const row of rows) {
+    const { product, offer } = row;
+
+    const sizes = product.sizes ?? [];
+
+    const totalStock = sizes.reduce((sum, s) => sum + (s.stock ?? 0), 0);
+
+    const enriched: LimitedProduct = {
+      ...product,
+      offer: offer ?? null,
+      discountedPrice: getDiscountedPrice(product.price, offer),
+      totalStock,
+      sizesWithStock: sizes,
+    };
+
+    grouped.set(product.id, enriched);
+  }
+
+  return Array.from(grouped.values()).filter(
+    (product) => product.totalStock < 10,
+  );
 }

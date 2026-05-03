@@ -1,25 +1,28 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { Heart, Plus } from "lucide-react";
+import { Clock, Heart, Plus } from "lucide-react";
 import { Image } from "./ui/image";
 import { Button } from "./ui/button";
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import { SelectProduct, SelectOffer } from "@/db/schemas";
 import { cn } from "@/lib/utils";
 import { useWishlistStore, WishlistItem } from "@/store/wishlist";
+import { Badge } from "./ui/badge";
 
 type ProductCardProps = {
   product: SelectProduct;
   offer?: SelectOffer;
   variant?: "default" | "discount";
   showThumbnails?: boolean;
+  stock?: number;
 };
 
 export const ProductCard = ({
   product,
   offer,
   variant = "default",
+  stock,
   showThumbnails = true,
 }: ProductCardProps) => {
   const images = Array.isArray(product.images) ? product.images : [];
@@ -116,7 +119,7 @@ export const ProductCard = ({
       )}
       <Link href={href}>
         {/* INFO */}
-        <div className="p-2">
+        <div className="p-4">
           <h3 className="font-medium line-clamp-1">{product.name}</h3>
           <p className="text-xs text-muted-foreground">{product.brand}</p>
 
@@ -137,7 +140,18 @@ export const ProductCard = ({
           </div>
 
           {/* CTA */}
-          <div className="flex justify-end mt-2">
+          <div
+            className={cn(
+              "flex justify-end mt-2 items-center",
+              stock && "justify-between",
+            )}
+          >
+            {stock && (
+              <Badge variant={"destructive"}>
+                <Clock />
+                {stock} Left in stock
+              </Badge>
+            )}
             <Button size="icon">
               <Plus />
             </Button>

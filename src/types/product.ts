@@ -11,3 +11,11 @@ export type ProductWithOptionalOffer = SelectProduct & {
   offer: SelectOffer | null;
   discountedPrice: number | null;
 };
+
+export type LimitedProduct = ProductWithOptionalOffer & {
+  totalStock: number;
+  sizesWithStock: {
+    size: string;
+    stock: number;
+  }[];
+};
