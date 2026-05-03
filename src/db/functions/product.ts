@@ -8,6 +8,17 @@ export async function getFeaturedProducts(): Promise<SelectProduct[]> {
   const productsData = await db.select().from(products);
   return productsData;
 }
+export async function getProducts(): Promise<SelectProduct[]> {
+  // 1. Fetch base data
+  const productsData = await db.select().from(products);
+  return productsData;
+}
+
+export async function getProductSlugs(): Promise<SelectProduct["slug"][]> {
+  // 1. Fetch base data
+  const rows = await db.select({ slug: products.slug }).from(products);
+  return rows.map((row) => row.slug);
+}
 
 export async function getProductBySlug(
   slug: string,

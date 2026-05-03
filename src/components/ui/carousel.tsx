@@ -135,7 +135,7 @@ function Carousel({
 function CarouselContent({
   className,
   children,
-  showDefaultItem = true,
+  showDefaultItem = false,
   ...props
 }: React.ComponentProps<"div"> & { showDefaultItem?: boolean }) {
   const { carouselRef, orientation } = useCarousel();

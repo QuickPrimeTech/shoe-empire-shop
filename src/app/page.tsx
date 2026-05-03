@@ -1,5 +1,5 @@
 import { Hero } from "@/sections/home/hero";
-import { Marquee } from "@/layouts/marquee";
+import { Marquee } from "@/sections/home/marquee";
 import { FeaturedCarousel } from "@/sections/home/featured-carousel";
 // Import your Drizzle db instance
 import { getFeaturedProducts } from "@/db/functions/product";

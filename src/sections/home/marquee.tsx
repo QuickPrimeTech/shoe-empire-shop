@@ -1,7 +1,7 @@
 const ITEMS = [
   "NEW ARRIVALS",
   "LIMITED EDITION",
-  "FREE SHIPPING OVER $150", // You can change this to Ksh if you prefer!
+  "FREE SHIPPING AROUND CBD FOR ORDERS OVER KSH 5,000", // You can change this to Ksh if you prefer!
   "DROP 04 LIVE NOW",
   "MEMBER EXCLUSIVE",
 ];

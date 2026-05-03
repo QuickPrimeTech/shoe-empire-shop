@@ -26,7 +26,7 @@ export const FeaturedCarousel = ({
 
       {/* GRID instead of outer carousel */}
       <Carousel>
-        <CarouselContent>
+        <CarouselContent showDefaultItem={true}>
           {products.map((p) => (
             <CarouselItem
               key={p.id}

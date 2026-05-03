@@ -12,6 +12,7 @@ import { useCartStore } from "@/store/cart";
 import { useWishlistStore, WishlistItem } from "@/store/wishlist";
 import { formatPrice } from "@/helpers/formatters";
 import { cn } from "@/lib/utils";
+import { ShareButton } from "@/components/ui/share-button";
 
 interface ProductContentProps {
   product: SelectProduct;
@@ -80,21 +81,43 @@ export const ProductContent = ({ product }: ProductContentProps) => {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-foreground">
               {product.name}
             </h1>
+            <div className="flex justify-between items-center gap-6">
+              <div className="flex items-center gap-3 pt-1">
+                <span className="text-2xl md:text-3xl font-bold text-foreground">
+                  {formatPrice(product.price)}
+                </span>
 
-            <div className="flex items-center gap-3 pt-1">
-              <span className="text-2xl md:text-3xl font-bold text-foreground">
-                {formatPrice(product.price)}
-              </span>
-
-              {isOutOfStock ? (
-                <Badge variant="destructive">Out of Stock</Badge>
-              ) : isLowStock ? (
-                <Badge variant="secondary">
-                  Only {selectedSize?.stock} left
-                </Badge>
-              ) : (
-                <Badge variant={"success"}>In Stock</Badge>
-              )}
+                {isOutOfStock ? (
+                  <Badge variant="destructive">Out of Stock</Badge>
+                ) : isLowStock ? (
+                  <Badge variant="secondary">
+                    Only {selectedSize?.stock} left
+                  </Badge>
+                ) : (
+                  <Badge variant={"success"}>In Stock</Badge>
+                )}
+              </div>
+              <ShareButton
+                variant={"ghost"}
+                shareData={{
+                  title: product.name,
+                  text: `Check out this product: ${product.description}`,
+                  url: `${process.env.NEXT_PUBLIC_SITE_URL}/products/${product.slug}`,
+                }}
+                onShareSuccess={() => {
+                  toast.success("Product shared successfully!");
+                }}
+                type="button"
+                onShareError={(error) => {
+                  // Only show error if it's not a user cancellation
+                  if (error.name !== "AbortError") {
+                    toast.error("Failed to share product");
+                  }
+                }}
+                onCopyFallback={() => {
+                  toast.success("Productlink copied to clipboard!");
+                }}
+              />
             </div>
           </div>
 
