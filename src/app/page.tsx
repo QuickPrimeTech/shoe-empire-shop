@@ -9,6 +9,7 @@ import {
 import { getCategories } from "@/db/functions/category";
 import { BentoCategories } from "@/sections/home/bento-categories";
 import { CrazyDiscounts } from "@/sections/home/crazy-discounts";
+import { LimitedProducts } from "@/sections/home/limited-products";
 
 export default async function Home() {
   const featuredProducts = await getLatestProducts(); // Fetch featured products
@@ -21,6 +22,7 @@ export default async function Home() {
       <BentoCategories categories={categories} />
       <CrazyDiscounts offers={offers} />
       <LatestProducts products={featuredProducts} />
+      <LimitedProducts />
     </>
   );
 }
