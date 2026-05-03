@@ -4,11 +4,50 @@ import { products, SelectProduct } from "@/db/schemas/products";
 import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { offers, SelectOffer } from "@/db/schemas/offers";
 import { LimitedProduct, ProductWithOptionalOffer } from "@/types/product";
+import { categories } from "../schemas";
 
-export async function getProducts(): Promise<SelectProduct[]> {
-  // 1. Fetch base data
-  const productsData = await db.select().from(products);
-  return productsData;
+// Add this import at the top of your file
+// import { categories } from "@/db/schemas/categories";
+
+export async function getProducts() {
+  const now = new Date();
+
+  // 1. Fetch base data with joins
+  const rows = await db
+    .select({
+      product: products,
+      offer: offers,
+      category: categories, // Ensure categories is imported
+    })
+    .from(products)
+    // Join active offers
+    .leftJoin(
+      offers,
+      and(
+        eq(products.id, offers.productId),
+        eq(offers.isActive, true),
+        lte(offers.startDate, now),
+        gte(offers.endDate, now),
+      ),
+    )
+    // Join categories (Assuming products table has a categoryId column)
+    .leftJoin(categories, eq(products.categoryId, categories.id));
+
+  // 2. Map and enrich the data
+  return rows.map(({ product, offer, category }) => {
+    // Calculate stock size based on the pattern used in getLimitedProducts
+    const sizes = product.sizes ?? [];
+    const totalStock = sizes.reduce((sum, s) => sum + (s.stock ?? 0), 0);
+
+    return {
+      ...product,
+      category: category ?? null,
+      offer: offer ?? null,
+      discountedPrice: getDiscountedPrice(product.price, offer),
+      totalStock,
+      sizesWithStock: sizes,
+    };
+  });
 }
 
 export function getDiscountedPrice(price: number, offer?: SelectOffer | null) {
@@ -55,6 +94,7 @@ export async function getLatestProducts(): Promise<ProductWithOptionalOffer[]> {
     };
   });
 }
+
 export async function getDiscountedProducts() {
   const now = new Date();
 

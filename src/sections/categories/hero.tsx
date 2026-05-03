@@ -4,9 +4,9 @@ export const Hero = () => {
       <p className="text-xs font-mono tracking-widest uppercase text-muted-foreground mb-3">
         Shop your style
       </p>
-      <h2 className="font-display text-heading-2 md:text-heading-1 uppercase">
+      <h1 className="font-display text-heading-2 md:text-heading-1 uppercase">
         Categories
-      </h2>
+      </h1>
     </>
   );
 };

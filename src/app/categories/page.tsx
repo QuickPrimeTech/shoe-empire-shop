@@ -40,7 +40,7 @@ export default async function CategoriesPage() {
 
   return (
     <>
-      <section className="min-h-screen space-y-8 py-16 md:py-24 section bg-background">
+      <section className="min-h-screen space-y-8 py-16 md:py-24 section">
         <Hero />
         <div className="container mx-auto">
           {categoriesData.length === 0 ? (
