@@ -1,19 +1,10 @@
 "use client";
-
 import Link from "next/link";
 import { useState } from "react";
 import { Heart, Plus } from "lucide-react";
-
 import { Image } from "./ui/image";
 import { Button } from "./ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "./ui/carousel";
-
+import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel";
 import { SelectProduct, SelectOffer } from "@/db/schemas";
 import { cn } from "@/lib/utils";
 import { useWishlistStore, WishlistItem } from "@/store/wishlist";
@@ -65,8 +56,7 @@ export const ProductCard = ({
   return (
     <div
       className={cn(
-        "group relative border bg-card rounded-md overflow-hidden",
-        variant === "discount" && "border-red-200",
+        "group relative border bg-card rounded-md overflow-hidden h-full",
       )}
     >
       {/* Wishlist */}
@@ -85,7 +75,7 @@ export const ProductCard = ({
       {/* DISCOUNT BADGE */}
       {hasOffer && (
         <div className="absolute top-3 left-3 z-20">
-          <span className="text-xs font-bold bg-red-500 text-white px-2 py-1 rounded-md">
+          <span className="text-xs font-bold bg-primary text-primary-foreground px-2 py-1 rounded-md">
             {discountLabel}
           </span>
         </div>
@@ -106,12 +96,14 @@ export const ProductCard = ({
       {/* THUMBNAILS (OPTIONAL) */}
       {showThumbnails && images.length > 1 && (
         <Carousel className="px-2 mt-1">
-          <CarouselContent className="gap-1">
+          <CarouselContent
+            className={cn("gap-1", images.length < 6 && "justify-center")}
+          >
             {images.map((img) => (
               <CarouselItem
                 key={img.url}
                 className={cn(
-                  "basis-1/4 aspect-square opacity-50 border rounded-md overflow-hidden",
+                  "basis-1/6 aspect-square opacity-50 pl-0 border rounded-md overflow-hidden",
                   productImage?.url === img.url && "opacity-100",
                 )}
                 onClick={() => setProductImage(img)}
@@ -120,8 +112,6 @@ export const ProductCard = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious size="icon-xs" />
-          <CarouselNext size="icon-xs" />
         </Carousel>
       )}
 
@@ -134,7 +124,7 @@ export const ProductCard = ({
         <div className="mt-2 flex items-center gap-2">
           {hasOffer ? (
             <>
-              <span className="text-red-500 font-bold">
+              <span className="text-primary font-bold">
                 Ksh {finalPrice?.toLocaleString()}
               </span>
               <span className="line-through text-muted-foreground text-sm">
@@ -148,8 +138,10 @@ export const ProductCard = ({
 
         {/* CTA */}
         <div className="flex justify-end mt-2">
-          <Button size="icon">
-            <Plus />
+          <Button size="icon" asChild>
+            <Link href={href}>
+              <Plus />
+            </Link>
           </Button>
         </div>
       </div>

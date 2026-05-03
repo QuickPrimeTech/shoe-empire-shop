@@ -19,7 +19,7 @@ export const LatestProducts = ({ products }: { products: SelectProduct[] }) => {
       id="latest-products"
       className="py-20 bg-background overflow-hidden"
     >
-      <div className="container mx-auto px-6 md:px-12 mb-12">
+      <div className="container section mx-auto mb-12">
         <div className="flex justify-between items-center gap-12">
           <div>
             <p className="text-xs font-mono tracking-widest uppercase text-muted-foreground mb-3">

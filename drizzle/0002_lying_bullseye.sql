@@ -1,0 +1,2 @@
+CREATE TYPE "public"."discount_type" AS ENUM('percentage', 'fixed_amount');--> statement-breakpoint
+ALTER TABLE "offers" ALTER COLUMN "discount_type" SET DATA TYPE "public"."discount_type" USING "discount_type"::"public"."discount_type";

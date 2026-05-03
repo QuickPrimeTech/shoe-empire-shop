@@ -15,6 +15,13 @@
       "when": 1777808850062,
       "tag": "0001_far_boomer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777814325347,
+      "tag": "0002_lying_bullseye",
+      "breakpoints": true
     }
   ]
 }
