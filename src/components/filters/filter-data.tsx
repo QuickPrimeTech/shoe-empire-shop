@@ -103,7 +103,7 @@ export function getFiltersConfig(
     },
     {
       id: "discounted", // New dynamic filter
-      label: "On Sale Items",
+      label: "Discounted",
       icon: <Percent className="h-4 w-4" />,
       options: [],
       type: "boolean",

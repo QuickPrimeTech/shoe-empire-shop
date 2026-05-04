@@ -1,8 +1,6 @@
 "use client";
-
 import { useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox"; // Import Shadcn Checkbox
 import { cn } from "@/lib/utils";
@@ -105,7 +103,7 @@ export function FilterControl({ config }: { config: FilterConfig }) {
     const [range, setRange] = useState([min, max]);
 
     return (
-      <div className="px-1 space-y-6">
+      <div className="px-1 py-2 space-y-6">
         <Slider
           value={range}
           max={50000}
@@ -134,19 +132,28 @@ export function FilterControl({ config }: { config: FilterConfig }) {
 
   // --- Type: Boolean (Stock) ---
   if (type === "boolean") {
-    const isInStock = getParam("inStock") === "true";
+    // Use the ID from config (could be "inStock" or "discounted")
+    const isActive = getParam(id) === "true";
+
     return (
-      <div className="flex items-center justify-between px-1">
-        <Label htmlFor="stock-toggle" className="text-sm cursor-pointer">
-          In Stock Only
-        </Label>
-        <Switch
-          id="stock-toggle"
-          checked={isInStock}
+      <div
+        className="flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all cursor-pointer hover:bg-muted/50"
+        onClick={() => updateFilter(id, isActive ? null : "true")}
+      >
+        <Checkbox
+          id={`bool-${id}`}
+          checked={isActive}
           onCheckedChange={(checked) =>
-            updateFilter("inStock", checked ? "true" : null)
+            updateFilter(id, checked ? "true" : null)
           }
         />
+        <Label
+          htmlFor={`bool-${id}`}
+          className="flex-1 text-sm font-medium leading-none cursor-pointer"
+        >
+          {config.label}{" "}
+          {/* This will now say "Collection" or "In Stock Only" dynamicallly */}
+        </Label>
       </div>
     );
   }
