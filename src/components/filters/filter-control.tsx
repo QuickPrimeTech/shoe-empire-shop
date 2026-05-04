@@ -11,7 +11,7 @@ import { useFilterParams } from "@/hooks/use-filter-params";
 
 export function FilterControl({ config }: { config: FilterConfig }) {
   const { id, type, options } = config;
-  const { getParam, updateFilter } = useFilterParams();
+  const { getParam, updateFilter, updateFilters } = useFilterParams();
 
   // --- Type: Single (e.g., Gender) ---
   if (type === "single") {
@@ -112,11 +112,10 @@ export function FilterControl({ config }: { config: FilterConfig }) {
           step={1000}
           onValueChange={setRange}
           onValueCommit={(value) => {
-            updateFilter("minPrice", value[0] > 0 ? String(value[0]) : null);
-            updateFilter(
-              "maxPrice",
-              value[1] < 50000 ? String(value[1]) : null,
-            );
+            updateFilters({
+              minPrice: value[0] > 0 ? String(value[0]) : null,
+              maxPrice: value[1] < 50000 ? String(value[1]) : null,
+            });
           }}
           className="w-full"
         />

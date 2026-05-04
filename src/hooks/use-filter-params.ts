@@ -32,6 +32,25 @@ export function useFilterParams() {
     [searchParams, pathname, router],
   );
 
+  const updateFilters = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams);
+
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === null || value === "") {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
+
+      params.delete("page");
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, pathname, router],
+  );
+
+  // Add this to your return statement
   const clearAll = useCallback(() => {
     router.push(pathname);
   }, [pathname, router]);
@@ -42,5 +61,5 @@ export function useFilterParams() {
     ).length;
   }, [searchParams]);
 
-  return { getParam, updateFilter, clearAll, getActiveCount };
+  return { getParam, updateFilter, updateFilters, clearAll, getActiveCount };
 }

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -39,7 +40,7 @@ export function FilterSidebar({
     return (
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetTrigger asChild>
-          <Button size="lg" className="relative rounded-full w-fit">
+          <Button className="relative rounded-full w-fit">
             <SlidersHorizontal className="size-6" />
             Filters
             <ActiveFilterCount />
@@ -54,6 +55,9 @@ export function FilterSidebar({
               <SlidersHorizontal className="h-5 w-5" />
               Filters
             </SheetTitle>
+            <SheetDescription className="sr-only">
+              Filter the displayed products to your liking
+            </SheetDescription>
             <ClearAllButton />
           </SheetHeader>
           <ScrollArea className="h-full">
