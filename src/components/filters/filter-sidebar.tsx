@@ -66,7 +66,11 @@ export function FilterSidebar({ products }: { products: EnrichedProduct[] }) {
     </Sheet>;
   }
   return (
-    <SidebarProvider open={desktopOpen} onOpenChange={setDesktopOpen}>
+    <SidebarProvider
+      open={desktopOpen}
+      onOpenChange={setDesktopOpen}
+      className="min-h-auto w-auto"
+    >
       <Sidebar
         collapsible="icon"
         className="sticky inset-auto h-[calc(100vh-64px)] top-16 border-r bg-card rounded-r-xl overflow-hidden"
