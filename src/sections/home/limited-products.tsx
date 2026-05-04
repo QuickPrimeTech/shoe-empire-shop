@@ -50,6 +50,7 @@ export const LimitedProducts = ({
             >
               <ProductCard
                 product={p}
+                showThumbnails={false}
                 offer={p.offer ?? undefined}
                 stock={p.totalStock}
               />

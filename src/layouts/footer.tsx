@@ -9,15 +9,39 @@ import { cacheLife } from "next/cache";
 const cols = [
   {
     title: "Shop",
-    links: ["New Arrivals", "Best Sellers", "Sale", "Gift Cards"],
+    links: [
+      {
+        label: "Discounted",
+        url: "/products?discounted=true",
+      },
+      {
+        label: "Categories",
+        url: "/categories",
+      },
+      {
+        label: "Best Sellers",
+        url: "#",
+      },
+    ],
   },
   {
     title: "Help",
-    links: ["Shipping", "Returns", "Order Status", "Contact"],
+    links: [
+      {
+        label: "Shipping",
+        url: "#",
+      },
+      { label: "Returns", url: "#" },
+      { label: "Order Status", url: "#" },
+      { label: "Contact", url: "/#find-us" },
+    ],
   },
   {
     title: "Company",
-    links: ["About", "Sustainability", "Careers", "Press"],
+    links: [
+      { label: "About", url: "#" },
+      { label: "Careers", url: "#" },
+    ],
   },
 ];
 
@@ -81,21 +105,21 @@ export const Footer = () => {
               </p>
               <ul className="space-y-2.5 text-sm">
                 {c.links.map((l) => (
-                  <li key={l}>
-                    <a
-                      href="#"
+                  <li key={l.label}>
+                    <Link
+                      href={l.url}
                       className="group flex gap-1 hover:-translate-x-2 transition-all hover:text-primary"
                     >
-                      {l}
+                      {l.label}
                       <ArrowUpRight className="opacity-0 group-hover:opacity-100 transition-all size-3.5" />
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
           ))}
           <div className="lg:col-span-1 flex lg:flex-col gap-3">
-            {socials.map((social, i) => (
+            {socials.map((social) => (
               <Button
                 key={social.url}
                 className="bg-secondary text-secondary-foreground hover:text-primary-foreground border"
