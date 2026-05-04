@@ -29,42 +29,45 @@ export function FilterSidebar({ products }: { products: EnrichedProduct[] }) {
   const [desktopOpen, setDesktopOpen] = useState(true);
 
   if (!isDesktop) {
-    <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-      <SheetTrigger asChild>
-        <Button size="lg" className="relative rounded-full shadow-lg">
-          <SlidersHorizontal className="size-6" />
-          Filters
-          <ActiveFilterCount />
-        </Button>
-      </SheetTrigger>
-      <SheetContent
-        side={"bottom"}
-        className="grid gap-0 grid-rows-[auto_minmax(0,1fr)_auto] max-h-[80vh] rounded-t-3xl px-0"
-      >
-        <SheetHeader className="flex-row px-6 pb-4 border-b">
-          <SheetTitle className="flex items-center gap-2 text-xl">
-            <SlidersHorizontal className="h-5 w-5" />
+    return (
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <SheetTrigger asChild>
+          <Button size="lg" className="relative rounded-full w-fit">
+            <SlidersHorizontal className="size-6" />
             Filters
-          </SheetTitle>
-          <ClearAllButton />
-        </SheetHeader>
-        <ScrollArea className="h-full">
-          <div className="px-6 py-6">
-            <FilterContent products={products} />
-          </div>
-          <ScrollBar />
-        </ScrollArea>
-        <div className="p-4 border-t">
-          <Button
-            onClick={() => setMobileOpen(false)}
-            className="w-full h-12 text-lg rounded-xl"
-          >
-            Show Results
+            <ActiveFilterCount />
           </Button>
-        </div>
-      </SheetContent>
-    </Sheet>;
+        </SheetTrigger>
+        <SheetContent
+          side={"bottom"}
+          className="grid gap-0 grid-rows-[auto_minmax(0,1fr)_auto] max-h-[80vh] rounded-t-3xl px-0"
+        >
+          <SheetHeader className="flex-row px-6 pb-4 border-b">
+            <SheetTitle className="flex items-center gap-2 text-xl">
+              <SlidersHorizontal className="h-5 w-5" />
+              Filters
+            </SheetTitle>
+            <ClearAllButton />
+          </SheetHeader>
+          <ScrollArea className="h-full">
+            <div className="px-6 py-6">
+              <FilterContent products={products} />
+            </div>
+            <ScrollBar />
+          </ScrollArea>
+          <div className="p-4 border-t">
+            <Button
+              onClick={() => setMobileOpen(false)}
+              className="w-full h-12 text-lg rounded-xl"
+            >
+              Show Results
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
   }
+
   return (
     <SidebarProvider
       open={desktopOpen}
@@ -112,7 +115,7 @@ function ActiveFilterCount() {
   if (count === 0) return null;
 
   return (
-    <span className="absolute -top-1 -right-1 h-5 w-5 bg-destructive text-destructive-foreground rounded-full text-xs flex items-center justify-center font-bold">
+    <span className="absolute -top-2 -right-1 h-5 w-5 bg-destructive text-destructive-foreground rounded-full text-xs flex items-center justify-center font-bold">
       {count}
     </span>
   );

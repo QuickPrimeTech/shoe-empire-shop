@@ -23,9 +23,11 @@ export default async function ProductsPage() {
   const products = await getProducts();
 
   return (
-    <div className="min-h-screen flex w-full">
-      <FilterSidebar products={products} />
-      <div className="min-h-[200vh] bg-muted/30 flex-1">Content</div>
+    <div className="min-h-screen relative flex bg-muted-30 flex-col lg:flex-row w-full">
+      <div className="flex max-sm:justify-end">
+        <FilterSidebar products={products} />
+      </div>
+      <div className="min-h-[200vh] flex-1 p-4 sm:p-6 lg:p-8">Content</div>
     </div>
   );
 }
