@@ -225,7 +225,10 @@ export function Navbar() {
       <Sheet open={isOpen} onOpenChange={open}>
         <SheetContent
           side={isDesktop ? "right" : "bottom"}
-          className="w-9/10 sm:w-8/10 md:w-1/2 lg:1/3"
+          className={cn(
+            isDesktop && "w-9/10 sm:w-8/10 md:w-1/2 lg:1/3",
+            !isDesktop && "rounded-t-3xl",
+          )}
         >
           <SheetHeader className="px-6 pt-6 pb-2">
             <div className="flex items-center gap-3">
@@ -300,14 +303,20 @@ function MobileNavContent({ pathname }: { pathname: string }) {
 /* ─── Accessibility Panel ─── */
 function A11yPanel() {
   const { theme, setTheme } = useTheme();
+  const isMobile = useMediaQuery("(max-width: 640px)");
   const { mounted, fontSize, setFontSize, reducedMotion, setReducedMotion } =
     useA11y();
 
   if (!mounted) return null;
 
   return (
-    <div className="flex flex-col h-full">
-      <ScrollArea className="flex-1 px-6 py-4">
+    <div
+      className={cn(
+        "flex flex-col",
+        isMobile && "grid max-h-[75vh] grid-rows-[minmax(0,1fr)_auto]",
+      )}
+    >
+      <ScrollArea className="flex-1 px-6 py-4 h-full">
         <div className="space-y-6">
           {/* Theme */}
           <section>
