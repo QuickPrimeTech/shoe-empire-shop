@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback } from "react";
 import { useSearchParams, usePathname } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";

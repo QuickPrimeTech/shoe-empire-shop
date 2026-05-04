@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import Link from "next/link";
 
 const content = [
@@ -34,7 +34,7 @@ const content = [
 export const Hero = () => {
   const [index, setIndex] = useState(0);
   const active = content[index];
-  const isMobile = useIsMobile();
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   // Auto-slide every 5 seconds
   useEffect(() => {

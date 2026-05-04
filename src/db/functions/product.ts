@@ -3,13 +3,17 @@ import { db } from "@/index";
 import { products, SelectProduct } from "@/db/schemas/products";
 import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { offers, SelectOffer } from "@/db/schemas/offers";
-import { LimitedProduct, ProductWithOptionalOffer } from "@/types/product";
+import {
+  EnrichedProduct,
+  LimitedProduct,
+  ProductWithOptionalOffer,
+} from "@/types/product";
 import { categories } from "../schemas";
 
 // Add this import at the top of your file
 // import { categories } from "@/db/schemas/categories";
 
-export async function getProducts() {
+export async function getProducts(): Promise<EnrichedProduct[]> {
   const now = new Date();
 
   // 1. Fetch base data with joins

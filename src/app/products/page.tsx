@@ -22,17 +22,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ProductsPage() {
   const products = await getProducts();
 
-  const categories = Array.from(
-    new Set(products.map((p) => p.category?.name).filter(Boolean)),
-  ) as string[];
-  const brands = Array.from(
-    new Set(products.map((p) => p.brand).filter(Boolean)),
-  ) as string[];
-  const maxPrice = Math.max(...products.map((p) => p.price), 10000);
-
   return (
-    <div className="min-h-screen py-10">
-      <FilterSidebar />
+    <div className="min-h-screen bg-red-500 w-full">
+      <FilterSidebar products={products} />
     </div>
   );
 }
