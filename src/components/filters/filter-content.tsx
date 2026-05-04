@@ -14,6 +14,7 @@ import { EnrichedProduct } from "@/types/product";
 import { Dispatch, SetStateAction } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 type FilterContentProps = {
   products: EnrichedProduct[];
@@ -23,6 +24,7 @@ type FilterContentProps = {
 export function FilterContent({ products, setOpen, open }: FilterContentProps) {
   // Generate the config dynamically on render
   const filters = getFiltersConfig(products);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   return (
     <Accordion
       type="multiple"
@@ -56,7 +58,7 @@ export function FilterContent({ products, setOpen, open }: FilterContentProps) {
               </AccordionTrigger>
             </TooltipTrigger>
 
-            {!open && (
+            {!open && isDesktop && (
               <TooltipContent side="right" className="flex items-center gap-2">
                 {filter.label}
                 <FilterBadge filterId={filter.id} />
