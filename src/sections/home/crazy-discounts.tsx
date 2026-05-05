@@ -13,6 +13,7 @@ import { ProductCard } from "@/components/product-card";
 import { ProductWithOffer } from "@/types/product";
 
 export const CrazyDiscounts = ({ offers }: { offers: ProductWithOffer[] }) => {
+  const href = `/products?discounted=true`;
   return (
     <section
       id="crazy-discounts"
@@ -29,7 +30,7 @@ export const CrazyDiscounts = ({ offers }: { offers: ProductWithOffer[] }) => {
             </h2>
           </div>
           <Button className="hidden md:inline-flex" variant="link" asChild>
-            <Link href="/collection/crazy-discounts">
+            <Link href={href}>
               View All <ArrowUpRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
@@ -60,7 +61,7 @@ export const CrazyDiscounts = ({ offers }: { offers: ProductWithOffer[] }) => {
       {/* Mobile CTA */}
       <div className="mt-8 flex justify-center md:hidden">
         <Button size="xl" asChild variant="outline">
-          <Link href="/collection/crazy-discounts">
+          <Link href={href}>
             View all discounts
             <ArrowUpRight className="h-4 w-4 ml-1" />
           </Link>

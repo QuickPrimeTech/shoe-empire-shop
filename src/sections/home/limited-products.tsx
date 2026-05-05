@@ -17,6 +17,7 @@ export const LimitedProducts = ({
 }: {
   products: LimitedProduct[];
 }) => {
+  const href = `/products?limited=true`;
   return (
     <section
       id="limited-products"
@@ -33,7 +34,7 @@ export const LimitedProducts = ({
             </h2>
           </div>
           <Button className="hidden md:inline-flex" variant={"link"} asChild>
-            <Link href={`/collection/limited-products`}>
+            <Link href={href}>
               View All <ArrowUpRight />
             </Link>
           </Button>
@@ -63,7 +64,7 @@ export const LimitedProducts = ({
       {/* Mobile CTA */}
       <div className="mt-8 flex justify-center md:hidden">
         <Button size={"xl"} asChild variant="outline">
-          <Link href="/collection/limited-products">
+          <Link href={href}>
             View all limited products
             <ArrowUpRight className="h-4 w-4 ml-1" />
           </Link>

@@ -17,7 +17,7 @@ const content = [
       "Discover unbeatable sneaker deals at Shoe Empire. Built for comfort and turning heads from CBD to Westlands.",
     image:
       "https://res.cloudinary.com/quick-prime-tech/image/upload/v1777644343/hero-sneaker_litw48.png",
-    link: "/collections/sneakers",
+    link: "/products?category=sneakers",
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ const content = [
       "Upgrade luku yako with our latest T-shirt collection. Trendy and comfortable for every sherehe.",
     image:
       "https://res.cloudinary.com/quick-prime-tech/image/upload/v1777645585/t-shirt_kdpest.png",
-    link: "/collections/t-shirts",
+    link: "/products?category=t-shirts",
   },
 ];
 

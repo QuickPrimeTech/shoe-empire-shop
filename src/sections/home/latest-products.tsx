@@ -17,6 +17,7 @@ export const LatestProducts = ({
 }: {
   products: ProductWithOptionalOffer[];
 }) => {
+  const href = `/products?new=true`;
   return (
     <section
       id="latest-products"
@@ -33,7 +34,7 @@ export const LatestProducts = ({
             </h2>
           </div>
           <Button className="hidden md:inline-flex" variant={"link"} asChild>
-            <Link href={`/collection/latest-products`}>
+            <Link href={href}>
               View All <ArrowUpRight />
             </Link>
           </Button>
@@ -58,7 +59,7 @@ export const LatestProducts = ({
       {/* Mobile CTA */}
       <div className="mt-8 flex justify-center md:hidden">
         <Button size={"xl"} asChild variant="outline">
-          <Link href="/collection/latest-products">
+          <Link href={href}>
             View all latest products
             <ArrowUpRight className="h-4 w-4 ml-1" />
           </Link>
