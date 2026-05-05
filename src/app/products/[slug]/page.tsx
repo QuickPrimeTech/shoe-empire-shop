@@ -4,6 +4,7 @@ import { getProductBySlug, getProductSlugs } from "@/db/functions/product";
 import { ProductContent } from "@/sections/products/slug/content";
 import { notFound } from "next/navigation";
 import { cacheLife } from "next/cache";
+import { SimilarProducts } from "@/sections/products/slug/similar-products";
 
 const getProductCached = async (slug: string) => {
   "use cache";
@@ -46,7 +47,7 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${product.name} | Shoe Empire`;
+  const title = `${product.name}`;
   const description = product.description.slice(0, 160);
   const imageUrl = product.images[0]?.url;
 
@@ -93,5 +94,10 @@ export default async function ProductPage({ params }: PageProps) {
 
   if (!product) return notFound();
 
-  return <ProductContent product={product} />;
+  return (
+    <div className="space-y-8">
+      <ProductContent product={product} />
+      <SimilarProducts slug={slug} />
+    </div>
+  );
 }

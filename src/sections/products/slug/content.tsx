@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { ShareButton } from "@/components/ui/share-button";
 import { ProductWithOptionalOffer } from "@/types/product";
 import { useCartUIStore } from "@/store/cart-ui";
+import { AppBreadcrumb } from "@/layouts/app-breadcrumb";
 
 interface ProductContentProps {
   product: ProductWithOptionalOffer;
@@ -99,7 +100,8 @@ export const ProductContent = ({ product }: ProductContentProps) => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-12">
+    <div className="container mx-auto space-y-4 section-small py-6 md:py-12">
+      <AppBreadcrumb />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
         {/* Left: Image */}
         <div className="w-full lg:sticky lg:top-24">

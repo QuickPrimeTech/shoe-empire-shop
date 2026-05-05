@@ -211,6 +211,85 @@ export async function getPaginatedProducts(
   return { data, totalPages, totalCount };
 }
 
+export async function getSimilarProducts(
+  productSlug: string,
+): Promise<ProductWithOptionalOffer[]> {
+  // 1. Get the reference product first to know its category, brand, and gender
+  const baseProductRows = await db
+    .select()
+    .from(products)
+    .where(eq(products.slug, productSlug))
+    .limit(1);
+
+  if (!baseProductRows.length) return [];
+
+  const baseProduct = baseProductRows[0];
+  const limit = 8;
+  const excludedIds = new Set<string>([baseProduct.id]);
+  const similarProducts: any[] = [];
+
+  // Helper to fetch and deduplicate
+  async function fetchAndAdd(condition: any) {
+    if (similarProducts.length >= limit) return;
+
+    const remaining = limit - similarProducts.length;
+    const results = await db
+      .select({
+        product: products,
+        offer: offers,
+      })
+      .from(products)
+      .leftJoin(
+        offers,
+        and(
+          eq(products.id, offers.productId),
+          eq(offers.isActive, true),
+          lte(offers.startDate, sql`now()`),
+          gte(offers.endDate, sql`now()`),
+        ),
+      )
+      .where(
+        and(
+          condition,
+          eq(products.isPublished, true),
+          sql`${products.id} NOT IN (${sql.join(
+            Array.from(excludedIds).map((id) => sql`${id}`),
+            sql`, `,
+          )})`,
+        ),
+      )
+      .limit(remaining);
+
+    for (const row of results) {
+      if (!excludedIds.has(row.product.id)) {
+        excludedIds.add(row.product.id);
+        similarProducts.push({
+          ...row.product,
+          offer: row.offer,
+          discountedPrice: getDiscountedPrice(row.product.price, row.offer),
+        });
+      }
+    }
+  }
+
+  // Pass 1: Same Category
+  if (baseProduct.categoryId) {
+    await fetchAndAdd(eq(products.categoryId, baseProduct.categoryId));
+  }
+
+  // Pass 2: Same Brand (if limit not reached)
+  if (similarProducts.length < limit) {
+    await fetchAndAdd(eq(products.brand, baseProduct.brand));
+  }
+
+  // Pass 3: Same Gender (if limit still not reached)
+  if (similarProducts.length < limit) {
+    await fetchAndAdd(eq(products.gender, baseProduct.gender));
+  }
+
+  return similarProducts;
+}
+
 export function getDiscountedPrice(price: number, offer?: SelectOffer | null) {
   if (!offer) return price;
 

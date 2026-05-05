@@ -2,6 +2,7 @@
 import { FilterPagination } from "@/components/filters/pagination";
 import { ProductCard } from "@/components/product-card";
 import { getPaginatedProducts } from "@/db/functions/product";
+import { AppBreadcrumb } from "@/layouts/app-breadcrumb";
 import { filterSchema, ValidFilters } from "@/lib/filter-schema";
 import { SearchParams } from "@/types/common";
 import { cacheLife } from "next/cache";
@@ -39,7 +40,8 @@ export async function ProductGrid({ searchParams }: SearchParams) {
 
   console.log("Total Pages  ---->", totalPages);
   return (
-    <div>
+    <div className="space-y-4">
+      <AppBreadcrumb />
       <div className="mb-4 text-sm text-muted-foreground">
         Showing {data.length} of {totalCount} results
       </div>
