@@ -12,18 +12,6 @@ import { useCartUIStore } from "@/store/cart-ui";
 import { useCartStore } from "@/store/cart";
 import { CheckoutSteps } from "@/sections/checkout/checkout-steps";
 
-export type CartItem = {
-  id: number;
-  name: string;
-  brand: string;
-  size: string;
-  color: string;
-  price: number;
-  quantity: number;
-  image: string;
-  alt: string;
-};
-
 export default function CartCheckoutPage() {
   const step = useCartUIStore((state) => state.step);
   const cart = useCartStore((state) => state.items);
