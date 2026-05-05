@@ -1,28 +1,36 @@
 // @/sections/checkout/checkout-form.tsx
-
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useCartUIStore } from "@/store/cart-ui";
 import {
+  ArrowLeft,
   Banknote,
   Check,
   CreditCard,
+  Info,
   Lock,
   MapPin,
   Truck,
   User,
 } from "lucide-react";
-import { InformationCircleIcon } from "@heroicons/react/16/solid";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { checkoutSchema, CheckoutSchemaFormData } from "@/schemas/checkout";
+import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/store/cart";
 
-type PaymentMethod = "mpesa" | "card" | "cod";
-type DeliveryZone = "nairobi-cbd" | "nairobi-suburbs" | "mombasa" | "other";
-
-const deliveryZones: {
-  value: DeliveryZone;
-  label: string;
-  fee: number;
-  time: string;
-}[] = [
+const deliveryZones = [
   {
     value: "nairobi-cbd",
     label: "Nairobi CBD & Westlands",
@@ -42,452 +50,354 @@ const deliveryZones: {
     time: "1–2 days",
   },
   { value: "other", label: "Other Counties", fee: 500, time: "2–3 days" },
-];
+] as const;
 
 export default function CheckoutForm() {
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("mpesa");
   const setStep = useCartUIStore((state) => state.setStep);
-  const [deliveryZone, setDeliveryZone] = useState<DeliveryZone>("nairobi-cbd");
-  const [mpesaPhone, setMpesaPhone] = useState("");
   const [mpesaStep, setMpesaStep] = useState<
     "input" | "sending" | "waiting" | "success"
   >("input");
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    address: "",
-    city: "",
-    notes: "",
+  const clearCart = useCartStore((state) => state.clearCart);
+  const form = useForm<CheckoutSchemaFormData>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      phone: "",
+      email: "",
+      address: "",
+      city: "",
+      notes: "",
+      mpesaPhone: "",
+      deliveryZone: "nairobi-cbd",
+      paymentMethod: "mpesa",
+    },
   });
 
-  const handleFieldChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const { deliveryZone, paymentMethod, mpesaPhone } = form.watch();
+  const selectedZone = deliveryZones.find((z) => z.value === deliveryZone);
 
-  const handleMpesaPay = () => {
-    if (!mpesaPhone || mpesaPhone.length < 9) return;
-    setMpesaStep("sending");
-    setTimeout(() => {
-      setMpesaStep("waiting");
+  const onSubmit = (data: z.infer<typeof checkoutSchema>) => {
+    if (data.paymentMethod === "mpesa") {
+      if (!data.mpesaPhone || data.mpesaPhone.length < 9) {
+        form.setError("mpesaPhone", {
+          message: "Valid M-Pesa number required",
+        });
+        return;
+      }
+      setMpesaStep("sending");
       setTimeout(() => {
-        setMpesaStep("success");
-        setTimeout(() => setStep("confirmed"), 1500);
-      }, 3000);
-    }, 1000);
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (paymentMethod === "mpesa") {
-      handleMpesaPay();
+        setMpesaStep("waiting");
+        setTimeout(() => {
+          setMpesaStep("success");
+          setTimeout(() => setStep("confirmed"), 1500);
+        }, 3000);
+      }, 1000);
     } else {
+      clearCart();
       setStep("confirmed");
     }
   };
 
-  const selectedZone = deliveryZones.find((z) => z.value === deliveryZone);
+  const renderInput = (
+    name: keyof z.infer<typeof checkoutSchema>,
+    label: string,
+    placeholder: string,
+    full = false,
+    isTextArea = false,
+  ) => (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className={full ? "sm:col-span-2" : ""}>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            {isTextArea ? (
+              <Textarea
+                placeholder={placeholder}
+                className="w-full bg-input rounded-xl border-border resize-none"
+                rows={2}
+                {...field}
+              />
+            ) : (
+              <Input
+                placeholder={placeholder}
+                className="w-full bg-input rounded-xl border-border"
+                {...field}
+              />
+            )}
+          </FormControl>
+          <FormMessage className="text-[10px]" />
+        </FormItem>
+      )}
+    />
+  );
 
   return (
-    <form
-      onSubmit={handleFormSubmit}
-      className="flex flex-col gap-6"
-      noValidate
-    >
-      {/* Contact Info */}
-      <div className="p-5 md:p-6 rounded-2xl border border-border bg-card">
-        <h2 className="text-base font-800 text-foreground mb-5 flex items-center gap-2">
-          <User size={18} className="text-primary" />
-          Contact Information
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {[
-            {
-              field: "firstName",
-              label: "First Name",
-              type: "text",
-              placeholder: "Kelvin",
-            },
-            {
-              field: "lastName",
-              label: "Last Name",
-              type: "text",
-              placeholder: "Mwangi",
-            },
-            {
-              field: "phone",
-              label: "Phone (M-Pesa)",
-              type: "tel",
-              placeholder: "0712 345 678",
-              full: true,
-            },
-            {
-              field: "email",
-              label: "Email (optional)",
-              type: "email",
-              placeholder: "kelvin@email.com",
-              full: true,
-            },
-          ].map(({ field, label, type, placeholder, full }) => (
-            <div key={field} className={full ? "sm:col-span-2" : ""}>
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                {label}
-              </label>
-              <input
-                type={type}
-                placeholder={placeholder}
-                value={formData[field as keyof typeof formData]}
-                onChange={(e) => handleFieldChange(field, e.target.value)}
-                className="w-full bg-input border border-border rounded-xl px-4 py-3 text-sm font-500 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
-                required={field !== "email"}
-              />
-            </div>
-          ))}
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-6"
+        noValidate
+      >
+        {/* Contact Info */}
+        <div className="p-5 md:p-6 rounded-2xl border border-border bg-card">
+          <h2 className="text-base font-800 text-foreground mb-5 flex items-center gap-2">
+            <User size={18} className="text-primary" /> Contact Information
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {renderInput("firstName", "First Name", "Kelvin")}
+            {renderInput("lastName", "Last Name", "Mwangi")}
+            {renderInput("phone", "Phone (M-Pesa)", "0712 345 678", true)}
+            {renderInput("email", "Email (optional)", "kelvin@email.com", true)}
+          </div>
         </div>
-      </div>
 
-      {/* Delivery Address */}
-      <div className="p-5 md:p-6 rounded-2xl border border-border bg-card">
-        <h2 className="text-base font-800 text-foreground mb-5 flex items-center gap-2">
-          <MapPin size={18} className="text-primary" />
-          Delivery Address
-        </h2>
+        {/* Delivery Address */}
+        <div className="p-5 md:p-6 rounded-2xl border border-border bg-card flex flex-col gap-4">
+          <h2 className="text-base font-800 text-foreground flex items-center gap-2">
+            <MapPin size={18} className="text-primary" /> Delivery Address
+          </h2>
 
-        {/* Zone selector */}
-        <div className="mb-4">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
-            Delivery Zone
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {deliveryZones.map((zone) => (
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
+              Delivery Zone
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {deliveryZones.map((zone) => (
+                <button
+                  key={zone.value}
+                  type="button"
+                  onClick={() => form.setValue("deliveryZone", zone.value)}
+                  className={`flex justify-between p-3 rounded-xl border text-left transition-all ${deliveryZone === zone.value ? "border-primary bg-primary/5 text-primary" : "border-border"}`}
+                >
+                  <div>
+                    <p className="text-xs font-semibold">{zone.label}</p>
+                    <p className="text-[10px] text-muted-foreground font-500">
+                      {zone.time}
+                    </p>
+                  </div>
+                  <span className="text-xs font-800 shrink-0 ml-2">
+                    KES {zone.fee}
+                  </span>
+                </button>
+              ))}
+            </div>
+            {selectedZone && (
+              <div className="mt-3 flex items-center gap-2 text-xs font-600 text-primary">
+                <Truck size={14} /> {selectedZone.time} delivery · KES{" "}
+                {selectedZone.fee} fee
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {renderInput(
+              "address",
+              "Street Address",
+              "e.g. Tom Mboya Street",
+              false,
+            )}
+            {renderInput("city", "City / Town", "e.g. Nairobi", false)}
+            {renderInput(
+              "notes",
+              "Delivery Notes (optional)",
+              "Any special instructions...",
+              false,
+              true,
+            )}
+          </div>
+        </div>
+
+        {/* Payment Method */}
+        <div className="p-5 md:p-6 rounded-2xl border border-border bg-card">
+          <h2 className="text-base font-800 text-foreground mb-5 flex items-center gap-2">
+            <CreditCard size={18} className="text-primary" /> Payment Method
+          </h2>
+
+          <div className="flex flex-col gap-3 mb-5">
+            {[
+              {
+                id: "mpesa",
+                title: "M-Pesa",
+                desc: "STK Push to your phone.",
+                icon: (
+                  <div className="w-10 h-10 rounded-xl bg-[#00A651] flex items-center justify-center text-white font-900 text-[9px]">
+                    M-PESA
+                  </div>
+                ),
+              },
+              {
+                id: "card",
+                title: "Credit / Debit Card",
+                desc: "Visa, Mastercard accepted",
+                icon: (
+                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                    <CreditCard size={20} />
+                  </div>
+                ),
+              },
+              {
+                id: "cod",
+                title: "Cash on Delivery",
+                desc: "Pay when your order arrives",
+                icon: (
+                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                    <Banknote size={20} />
+                  </div>
+                ),
+              },
+            ].map((pm) => (
               <button
-                key={zone.value}
+                key={pm.id}
                 type="button"
-                onClick={() => setDeliveryZone(zone.value)}
-                className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-200 ${
-                  deliveryZone === zone.value
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-muted-foreground"
-                }`}
-                aria-pressed={deliveryZone === zone.value}
+                onClick={() => form.setValue("paymentMethod", pm.id as any)}
+                className={`flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all ${paymentMethod === pm.id ? (pm.id === "mpesa" ? "border-[#00A651] bg-[#00A651]/5" : "border-primary bg-primary/5") : "border-border"}`}
               >
-                <div>
-                  <p
-                    className={`text-xs font-semibold ${deliveryZone === zone.value ? "text-primary" : "text-foreground"}`}
-                  >
-                    {zone.label}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground font-500">
-                    {zone.time}
+                {pm.icon}
+                <div className="flex-1">
+                  <p className="text-sm font-800 text-foreground">{pm.title}</p>
+                  <p className="text-xs text-muted-foreground font-500">
+                    {pm.desc}
                   </p>
                 </div>
-                <span
-                  className={`text-xs font-800 shrink-0 ml-2 ${deliveryZone === zone.value ? "text-primary" : "text-foreground"}`}
-                >
-                  KES {zone.fee}
-                </span>
+                {pm.id === "mpesa" && (
+                  <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-500 text-[10px] font-800 rounded border border-emerald-600/20 shrink-0">
+                    Recommended
+                  </span>
+                )}
               </button>
             ))}
           </div>
-          {selectedZone && (
-            <div className="mt-3 flex items-center gap-2 text-xs font-600 text-primary">
-              <Truck size={14} />
-              {selectedZone.time} delivery · KES {selectedZone.fee} fee
+
+          {/* Dynamic Payment Details */}
+          {paymentMethod === "mpesa" && (
+            <div className="rounded-xl bg-[#00A651]/10 border border-[#00A651]/20 p-4">
+              {mpesaStep === "input" && (
+                <FormField
+                  control={form.control}
+                  name="mpesaPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-semibold text-[#00A651] uppercase tracking-wider mb-2 block">
+                        M-Pesa Phone Number
+                      </FormLabel>
+                      <div className="flex gap-2">
+                        <div className="flex items-center px-3 bg-input border rounded-xl text-sm font-semibold text-muted-foreground">
+                          +254
+                        </div>
+                        <FormControl>
+                          <Input
+                            placeholder="712 345 678"
+                            type="tel"
+                            className="flex-1 bg-input rounded-xl border-border"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value.replace(/\D/g, "").slice(0, 9),
+                              )
+                            }
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="text-[10px] text-red-500" />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {mpesaStep === "sending" && (
+                <div className="flex items-center gap-3 py-2 text-[#00A651]">
+                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />{" "}
+                  Sending STK Push...
+                </div>
+              )}
+              {mpesaStep === "waiting" && (
+                <div className="text-center py-2 text-[#00A651]">
+                  <span className="text-2xl mb-2 block">📱</span>
+                  <p className="text-sm font-800">Check your phone!</p>
+                </div>
+              )}
+              {mpesaStep === "success" && (
+                <div className="flex items-center gap-3 py-2 text-[#00A651]">
+                  <Check size={16} /> Payment Confirmed!
+                </div>
+              )}
             </div>
           )}
-        </div>
 
-        <div className="flex flex-col gap-3">
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
-              Street Address
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Tom Mboya Street, Apartment 4B"
-              value={formData.address}
-              onChange={(e) => handleFieldChange("address", e.target.value)}
-              className="w-full bg-input border border-border rounded-xl px-4 py-3 text-sm font-500 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
-              City / Town
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Nairobi"
-              value={formData.city}
-              onChange={(e) => handleFieldChange("city", e.target.value)}
-              className="w-full bg-input border border-border rounded-xl px-4 py-3 text-sm font-500 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
-              required
-            />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
-              Delivery Notes (optional)
-            </label>
-            <textarea
-              placeholder="Any special instructions for delivery..."
-              value={formData.notes}
-              onChange={(e) => handleFieldChange("notes", e.target.value)}
-              rows={2}
-              className="w-full bg-input border border-border rounded-xl px-4 py-3 text-sm font-500 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Payment Method */}
-      <div className="p-5 md:p-6 rounded-2xl border border-border bg-card">
-        <h2 className="text-base font-800 text-foreground mb-5 flex items-center gap-2">
-          <CreditCard size={18} className="text-primary" />
-          Payment Method
-        </h2>
-
-        <div className="flex flex-col gap-3 mb-5">
-          {/* M-Pesa */}
-          <button
-            type="button"
-            onClick={() => setPaymentMethod("mpesa")}
-            className={`flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
-              paymentMethod === "mpesa"
-                ? "border-[#00A651] bg-[#00A651]/5"
-                : "border-border hover:border-muted-foreground"
-            }`}
-            aria-pressed={paymentMethod === "mpesa"}
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#00A651] flex items-center justify-center shrink-0">
-              <span className="text-white font-900 text-[9px] tracking-tight">
-                M-PESA
-              </span>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-800 text-foreground">M-Pesa</p>
-              <p className="text-xs text-muted-foreground font-500">
-                STK Push to your phone. Instant confirmation.
-              </p>
-            </div>
-            <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-800 rounded border border-primary/20 shrink-0">
-              Recommended
-            </span>
-          </button>
-
-          {/* Card */}
-          <button
-            type="button"
-            onClick={() => setPaymentMethod("card")}
-            className={`flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
-              paymentMethod === "card"
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-muted-foreground"
-            }`}
-            aria-pressed={paymentMethod === "card"}
-          >
-            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-              <CreditCard size={20} className="text-foreground" />
-            </div>
-            <div>
-              <p className="text-sm font-800 text-foreground">
-                Credit / Debit Card
-              </p>
-              <p className="text-xs text-muted-foreground font-500">
-                Visa, Mastercard accepted
-              </p>
-            </div>
-          </button>
-
-          {/* Cash on Delivery */}
-          <button
-            type="button"
-            onClick={() => setPaymentMethod("cod")}
-            className={`flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
-              paymentMethod === "cod"
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-muted-foreground"
-            }`}
-            aria-pressed={paymentMethod === "cod"}
-          >
-            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-              <Banknote size={20} className="text-foreground" />
-            </div>
-            <div>
-              <p className="text-sm font-800 text-foreground">
-                Cash on Delivery
-              </p>
-              <p className="text-xs text-muted-foreground font-500">
-                Pay when your order arrives
-              </p>
-            </div>
-          </button>
-        </div>
-
-        {/* M-Pesa Phone Input */}
-        {paymentMethod === "mpesa" && (
-          <div className="rounded-xl bg-[#00A651]/10 border border-[#00A651]/20 p-4">
-            {mpesaStep === "input" && (
-              <div>
-                <label className="text-xs font-semibold text-[#00A651] uppercase tracking-wider mb-2 block">
-                  M-Pesa Phone Number
-                </label>
-                <div className="flex gap-2">
-                  <div className="flex items-center px-3 bg-input border border-border rounded-xl text-sm font-semibold text-muted-foreground shrink-0">
-                    +254
-                  </div>
-                  <input
-                    type="tel"
-                    placeholder="712 345 678"
-                    value={mpesaPhone}
-                    onChange={(e) =>
-                      setMpesaPhone(
-                        e.target.value.replace(/\D/g, "").slice(0, 9),
-                      )
-                    }
-                    className="flex-1 bg-input border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground placeholder:text-muted-foreground outline-none focus:border-[#00A651] transition-colors"
-                  />
-                </div>
-                <p className="text-[11px] text-[#00A651]/80 font-500 mt-2">
-                  An STK push notification will be sent to this number
-                </p>
-              </div>
-            )}
-
-            {mpesaStep === "sending" && (
-              <div className="flex items-center gap-3 py-2">
-                <div className="w-5 h-5 border-2 border-[#00A651] border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm font-semibold text-[#00A651]">
-                  Sending STK Push to +254{mpesaPhone}...
-                </p>
-              </div>
-            )}
-
-            {mpesaStep === "waiting" && (
-              <div className="text-center py-2">
-                <div className="w-12 h-12 rounded-full bg-[#00A651]/20 flex items-center justify-center mx-auto mb-3">
-                  <span className="text-2xl">📱</span>
-                </div>
-                <p className="text-sm font-800 text-[#00A651] mb-1">
-                  Check your phone!
-                </p>
-                <p className="text-xs text-muted-foreground font-500">
-                  Enter your M-Pesa PIN to confirm payment
-                </p>
-                <div className="flex justify-center gap-1 mt-3">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="w-2 h-2 rounded-full bg-[#00A651] animate-pulse"
-                      style={{ animationDelay: `${i * 200}ms` }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {mpesaStep === "success" && (
-              <div className="flex items-center gap-3 py-2">
-                <div className="w-8 h-8 rounded-full bg-[#00A651] flex items-center justify-center shrink-0">
-                  <Check size={16} className="text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-800 text-[#00A651]">
-                    Payment Confirmed!
-                  </p>
-                  <p className="text-xs text-muted-foreground font-500">
-                    Processing your order...
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Card fields */}
-        {paymentMethod === "card" && (
-          <div className="flex flex-col gap-3">
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                Card Number
-              </label>
-              <input
-                type="text"
-                placeholder="1234 5678 9012 3456"
+          {paymentMethod === "card" && (
+            <div className="flex flex-col gap-3">
+              <Input
+                placeholder="Card Number"
                 maxLength={19}
-                className="w-full bg-input border border-border rounded-xl px-4 py-3 text-sm font-500 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+                className="bg-input rounded-xl"
               />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                  Expiry
-                </label>
-                <input
-                  type="text"
+              <div className="grid grid-cols-2 gap-3">
+                <Input
                   placeholder="MM / YY"
                   maxLength={7}
-                  className="w-full bg-input border border-border rounded-xl px-4 py-3 text-sm font-500 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+                  className="bg-input rounded-xl"
                 />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
-                  CVV
-                </label>
-                <input
-                  type="text"
-                  placeholder="123"
+                <Input
+                  placeholder="CVV"
                   maxLength={4}
-                  className="w-full bg-input border border-border rounded-xl px-4 py-3 text-sm font-500 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
+                  className="bg-input rounded-xl"
                 />
               </div>
             </div>
-          </div>
-        )}
-
-        {paymentMethod === "cod" && (
-          <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/50">
-            <InformationCircleIcon className="text-muted-foreground shrink-0 mt-0.5 size-16" />
-            <p className="text-xs text-muted-foreground font-500">
-              Have exact cash ready. Our rider will confirm your order before
-              delivery. Extra KES 50 COD fee applies.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Submit */}
-      <button
-        type="submit"
-        className="btn-primary flex items-center justify-center gap-2 py-4 rounded-xl text-base font-800"
-        disabled={mpesaStep === "sending" || mpesaStep === "waiting"}
-      >
-        {paymentMethod === "mpesa" && mpesaStep === "input" && (
-          <>
-            <span className="text-[#00A651] font-900 text-sm">M-PESA</span>
-            Pay Now
-          </>
-        )}
-        {paymentMethod === "mpesa" &&
-          (mpesaStep === "sending" || mpesaStep === "waiting") && (
-            <>
-              <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-              Processing...
-            </>
           )}
-        {paymentMethod === "card" && (
-          <>
-            <Lock size={16} />
-            Pay Securely
-          </>
-        )}
-        {paymentMethod === "cod" && (
-          <>
-            <Check size={16} />
-            Place Order (COD)
-          </>
-        )}
-      </button>
-    </form>
+
+          {paymentMethod === "cod" && (
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-muted/50 text-muted-foreground text-xs font-500">
+              <Info className="shrink-0 mt-0.5 size-4" /> Have exact cash ready.
+              Extra KES 50 COD fee applies.
+            </div>
+          )}
+        </div>
+
+        {/* Submit */}
+        <div className="flex flex-col-reverse sm:flex-row gap-2">
+          <Button
+            variant={"outline"}
+            size={"xl"}
+            className="cursor-pointer sm:flex-1"
+            onClick={() => setStep("cart")}
+          >
+            <ArrowLeft />
+            Back
+          </Button>
+          <Button
+            type="submit"
+            className="gap-2 cursor-pointer sm:flex-3"
+            size={"xl"}
+            disabled={mpesaStep === "sending" || mpesaStep === "waiting"}
+          >
+            {paymentMethod === "mpesa" && mpesaStep === "input" && (
+              <>
+                <span className="text-primary-foreground">M-PESA</span> Pay Now
+              </>
+            )}
+            {paymentMethod === "mpesa" &&
+              (mpesaStep === "sending" || mpesaStep === "waiting") && (
+                <>
+                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />{" "}
+                  Processing...
+                </>
+              )}
+            {paymentMethod === "card" && (
+              <>
+                <Lock size={16} /> Pay Securely
+              </>
+            )}
+            {paymentMethod === "cod" && (
+              <>
+                <Check size={16} /> Place Order (COD)
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
