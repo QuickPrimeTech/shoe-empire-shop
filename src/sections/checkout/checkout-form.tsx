@@ -90,10 +90,14 @@ export default function CheckoutForm() {
         setMpesaStep("waiting");
         setTimeout(() => {
           setMpesaStep("success");
-          setTimeout(() => setStep("confirmed"), 1500);
+          setTimeout(() => {
+            clearCart();
+            setStep("confirmed");
+          }, 1500);
         }, 3000);
       }, 1000);
     } else {
+      console.log("clearing cart .........");
       clearCart();
       setStep("confirmed");
     }

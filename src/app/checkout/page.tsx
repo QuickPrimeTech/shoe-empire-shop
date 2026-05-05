@@ -25,47 +25,45 @@ export default function CartCheckoutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto section py-20">
-        {/* Header */}
-        <div className="space-y-8 mb-8">
-          <Button variant={"link"} asChild>
-            <Link href="/products">
-              <ArrowLeft /> Continue Shopping
-            </Link>
-          </Button>
-          <div className="space-y-2">
-            <h1 className="text-2xl md:text-3xl font-bold font-800 text-foreground">
-              {step === "cart" ? "Your Cart" : "Checkout"}
-            </h1>
-            {cart.length > 0 && (
-              <p className="text-sm text-muted-foreground font-500 mt-1">
-                {cart.reduce((s, i) => s + i.quantity, 0)} item
-                {cart.reduce((s, i) => s + i.quantity, 0) !== 1 ? "s" : ""} in
-                your cart
-              </p>
-            )}
+    <div className="max-w-7xl mx-auto section pt-16 pb-20">
+      {/* Header */}
+      <div className="space-y-8 mb-8">
+        <Button variant={"link"} asChild>
+          <Link href="/products">
+            <ArrowLeft /> Continue Shopping
+          </Link>
+        </Button>
+        <div className="space-y-2">
+          <h1 className="text-2xl md:text-3xl font-bold font-800 text-foreground">
+            {step === "cart" ? "Your Cart" : "Checkout"}
+          </h1>
+          {cart.length > 0 && (
+            <p className="text-sm text-muted-foreground font-500 mt-1">
+              {cart.reduce((s, i) => s + i.quantity, 0)} item
+              {cart.reduce((s, i) => s + i.quantity, 0) !== 1 ? "s" : ""} in
+              your cart
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Steps indicator */}
+      <CheckoutSteps />
+      {cart.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left: Cart / Checkout Form */}
+          <div className="lg:col-span-7">
+            {step === "cart" ? <CartItems /> : <CheckoutForm />}
+          </div>
+
+          {/* Right: Order Summary */}
+          <div className="lg:col-span-5">
+            <OrderSummary />
           </div>
         </div>
-
-        {/* Steps indicator */}
-        <CheckoutSteps />
-        {cart.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Left: Cart / Checkout Form */}
-            <div className="lg:col-span-7">
-              {step === "cart" ? <CartItems /> : <CheckoutForm />}
-            </div>
-
-            {/* Right: Order Summary */}
-            <div className="lg:col-span-5">
-              <OrderSummary />
-            </div>
-          </div>
-        )}
-      </div>
-    </main>
+      )}
+    </div>
   );
 }
