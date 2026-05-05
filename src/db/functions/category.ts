@@ -10,6 +10,7 @@ export async function getCategories(): Promise<SelectCategory[]> {
 }
 
 export async function getCategoriesWithCount() {
+  "use cache";
   const result = await db
     .select({
       id: categories.id,

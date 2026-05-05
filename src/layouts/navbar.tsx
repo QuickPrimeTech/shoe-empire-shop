@@ -46,12 +46,12 @@ import {
 } from "@/components/ui/navigation-menu";
 import { CategoryCard } from "@/components/category-card";
 import { SearchProduct } from "@/components/search-product";
-import { EnrichedProduct } from "@/types/product";
+import { NavProducts } from "@/types/common";
 
 /* ─── NAV LINKS ─── */
 const NAV = [
-  { label: "Men", href: "/men?gender=men" },
-  { label: "Women", href: "/women?gender=women" },
+  { label: "Men", href: "/products?gender=men" },
+  { label: "Women", href: "/products?gender=women" },
 ];
 
 /* ─── THEME OPTIONS ─── */
@@ -92,7 +92,7 @@ type NavbarProps = {
   categories: (Omit<SelectCategory, "createdAt" | "updatedAt"> & {
     productCount: number;
   })[];
-  products: EnrichedProduct[];
+  products: NavProducts;
 };
 
 /* ═════════════════════════════════════════

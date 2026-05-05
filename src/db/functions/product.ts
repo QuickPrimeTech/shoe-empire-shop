@@ -11,6 +11,8 @@ import {
   ilike,
   inArray,
   lte,
+  ne,
+  or,
   sql,
 } from "drizzle-orm";
 import { offers, SelectOffer } from "@/db/schemas/offers";
@@ -24,6 +26,69 @@ import { ValidFilters } from "@/lib/filter-schema";
 
 // Add this import at the top of your file
 // import { categories } from "@/db/schemas/categories";
+
+export async function getSimilarProducts(
+  productSlug: string,
+): Promise<ProductWithOptionalOffer[]> {
+  "use cache";
+  // 1. Get reference product first
+  const [baseProduct] = await db
+    .select()
+    .from(products)
+    .where(eq(products.slug, productSlug))
+    .limit(1);
+
+  if (!baseProduct) return [];
+
+  // 2. Fetch all candidates in a single optimized query
+  const results = await db
+    .select({
+      product: products,
+      offer: offers,
+    })
+    .from(products)
+    .leftJoin(
+      offers,
+      and(
+        eq(products.id, offers.productId),
+        eq(offers.isActive, true),
+        // Use standard Date objects for build-time stability
+        lte(offers.startDate, new Date()),
+        gte(offers.endDate, new Date()),
+      ),
+    )
+    .where(
+      and(
+        eq(products.isPublished, true),
+        ne(products.id, baseProduct.id), // Exclude the current product
+        or(
+          baseProduct.categoryId
+            ? eq(products.categoryId, baseProduct.categoryId)
+            : undefined,
+          baseProduct.brand ? eq(products.brand, baseProduct.brand) : undefined,
+          baseProduct.gender
+            ? eq(products.gender, baseProduct.gender)
+            : undefined,
+        ),
+      ),
+    )
+    .orderBy(
+      // Weighted sorting: Category matches are highest priority, then Brand
+      sql`CASE 
+        WHEN ${products.categoryId} = ${baseProduct.categoryId as any} THEN 1
+        WHEN ${products.brand} = ${baseProduct.brand as any} THEN 2
+        ELSE 3 
+      END ASC`,
+    )
+    .limit(8);
+
+  // 3. Map results to your return type
+  return results.map((row) => ({
+    ...row.product,
+    offer: row.offer,
+    discountedPrice: getDiscountedPrice(row.product.price, row.offer),
+  }));
+}
 
 export async function getProducts(
   categorySlug?: string,
@@ -68,6 +133,30 @@ export async function getProducts(
       sizesWithStock: sizes,
     };
   });
+}
+
+// @/db/functions/product.ts
+
+export async function getProductsForNav() {
+  "use cache";
+  const rows = await db
+    .select({
+      id: products.id,
+      name: products.name,
+      slug: products.slug,
+      price: products.price,
+      images: products.images, // We will pick the first one in the map
+    })
+    .from(products)
+    .where(eq(products.isPublished, true));
+
+  return rows.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    image: p.images?.[0] ?? null, // Extract only the first image
+  }));
 }
 
 export async function getPaginatedProducts(
@@ -200,85 +289,6 @@ export async function getPaginatedProducts(
   });
 
   return { data, totalPages, totalCount };
-}
-
-export async function getSimilarProducts(
-  productSlug: string,
-): Promise<ProductWithOptionalOffer[]> {
-  // 1. Get the reference product first to know its category, brand, and gender
-  const baseProductRows = await db
-    .select()
-    .from(products)
-    .where(eq(products.slug, productSlug))
-    .limit(1);
-
-  if (!baseProductRows.length) return [];
-
-  const baseProduct = baseProductRows[0];
-  const limit = 8;
-  const excludedIds = new Set<string>([baseProduct.id]);
-  const similarProducts: any[] = [];
-
-  // Helper to fetch and deduplicate
-  async function fetchAndAdd(condition: any) {
-    if (similarProducts.length >= limit) return;
-
-    const remaining = limit - similarProducts.length;
-    const results = await db
-      .select({
-        product: products,
-        offer: offers,
-      })
-      .from(products)
-      .leftJoin(
-        offers,
-        and(
-          eq(products.id, offers.productId),
-          eq(offers.isActive, true),
-          lte(offers.startDate, sql`now()`),
-          gte(offers.endDate, sql`now()`),
-        ),
-      )
-      .where(
-        and(
-          condition,
-          eq(products.isPublished, true),
-          sql`${products.id} NOT IN (${sql.join(
-            Array.from(excludedIds).map((id) => sql`${id}`),
-            sql`, `,
-          )})`,
-        ),
-      )
-      .limit(remaining);
-
-    for (const row of results) {
-      if (!excludedIds.has(row.product.id)) {
-        excludedIds.add(row.product.id);
-        similarProducts.push({
-          ...row.product,
-          offer: row.offer,
-          discountedPrice: getDiscountedPrice(row.product.price, row.offer),
-        });
-      }
-    }
-  }
-
-  // Pass 1: Same Category
-  if (baseProduct.categoryId) {
-    await fetchAndAdd(eq(products.categoryId, baseProduct.categoryId));
-  }
-
-  // Pass 2: Same Brand (if limit not reached)
-  if (similarProducts.length < limit) {
-    await fetchAndAdd(eq(products.brand, baseProduct.brand));
-  }
-
-  // Pass 3: Same Gender (if limit still not reached)
-  if (similarProducts.length < limit) {
-    await fetchAndAdd(eq(products.gender, baseProduct.gender));
-  }
-
-  return similarProducts;
 }
 
 export function getDiscountedPrice(price: number, offer?: SelectOffer | null) {

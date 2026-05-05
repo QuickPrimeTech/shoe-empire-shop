@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { EnrichedProduct } from "@/types/product";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,12 +15,9 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Image } from "./ui/image";
+import { NavProducts } from "@/types/common";
 
-export const SearchProduct = ({
-  products,
-}: {
-  products: EnrichedProduct[];
-}) => {
+export const SearchProduct = ({ products }: { products: NavProducts }) => {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const router = useRouter();
@@ -93,8 +89,8 @@ export const SearchProduct = ({
                   <div className="flex gap-3">
                     <div className="relative flex h-12 aspect-square rounded-sm overflow-hidden">
                       <Image
-                        src={product.images[0].url}
-                        alt={product.images[0].altText}
+                        src={product.image.url}
+                        alt={product.image.altText}
                         fill
                         sizes="48px"
                       />

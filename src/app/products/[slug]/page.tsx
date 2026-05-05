@@ -1,22 +1,27 @@
 // @/app/products/[slug]/page.tsx
 import { Metadata } from "next";
-import { getProductBySlug, getProductSlugs } from "@/db/functions/product";
+import {
+  getProductBySlug,
+  getProductSlugs,
+  getSimilarProducts,
+} from "@/db/functions/product";
 import { ProductContent } from "@/sections/products/slug/content";
 import { notFound } from "next/navigation";
-import { cacheLife } from "next/cache";
 import { SimilarProducts } from "@/sections/products/slug/similar-products";
+import { unstable_cache } from "next/cache";
 
-const getProductCached = async (slug: string) => {
-  "use cache";
+// Cache at the Next.js level — shared across workers during build
+const getProductCached = unstable_cache(
+  async (slug: string) => getProductBySlug(slug),
+  ["product-by-slug"],
+  { revalidate: 21600 }, // 6 hours
+);
 
-  cacheLife({
-    revalidate: 6 * 60 * 60,
-    stale: 6 * 60 * 60,
-    expire: 6 * 60 * 60,
-  });
-
-  return await getProductBySlug(slug);
-};
+const getSimilarProductsCached = unstable_cache(
+  async (slug: string) => getSimilarProducts(slug),
+  ["similar-products"],
+  { revalidate: 21600 },
+);
 
 type PageProps = {
   params: Promise<{
@@ -27,10 +32,7 @@ type PageProps = {
 // Generate static paths for all products at build time
 export async function generateStaticParams() {
   const slugs = await getProductSlugs();
-
-  return slugs.map((slug) => ({
-    slug,
-  }));
+  return slugs.map((slug) => ({ slug }));
 }
 
 // Generate dynamic metadata for each product
@@ -91,13 +93,13 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params;
   const product = await getProductCached(slug);
-
+  const similarProducts = await getSimilarProductsCached(slug);
   if (!product) return notFound();
 
   return (
     <div className="space-y-8">
       <ProductContent product={product} />
-      <SimilarProducts slug={slug} />
+      <SimilarProducts similarProducts={similarProducts} />
     </div>
   );
 }

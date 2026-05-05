@@ -1,5 +1,4 @@
-// @/products/slug/similar-products.tsx
-import { ProductCard } from "@/components/product-card";
+// @/components/simiar-products-skeleton.tsx
 import {
   Carousel,
   CarouselContent,
@@ -7,13 +6,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ProductWithOptionalOffer } from "@/types/product";
+import { ProductCardSkeleton } from "./product-card-skeleton";
 
-export const SimilarProducts = ({
-  similarProducts,
-}: {
-  similarProducts: ProductWithOptionalOffer[];
-}) => {
+export const SimilarProductsSkeleton = async () => {
   return (
     <section id="similar-products" className="mb-16">
       <div className="container mx-auto section-small mb-6">
@@ -26,17 +21,12 @@ export const SimilarProducts = ({
       </div>
       <Carousel>
         <CarouselContent showDefaultItem={true}>
-          {similarProducts.map((similarProduct) => (
+          {Array.from({ length: 8 }).map((_, index) => (
             <CarouselItem
-              key={similarProduct.id}
+              key={index}
               className="basis-7/10 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
             >
-              <ProductCard
-                product={similarProduct}
-                offer={similarProduct.offer ?? undefined}
-                variant="discount"
-                showThumbnails={false}
-              />
+              <ProductCardSkeleton />
             </CarouselItem>
           ))}
         </CarouselContent>

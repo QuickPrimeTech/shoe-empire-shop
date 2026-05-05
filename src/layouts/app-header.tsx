@@ -2,9 +2,9 @@
 import { getCategoriesWithCount } from "@/db/functions/category";
 import { cacheLife } from "next/cache";
 import { Navbar } from "./navbar";
-import { getProducts } from "@/db/functions/product";
+import { getProductsForNav } from "@/db/functions/product";
 
-const getCategoriesWithCountCached = async () => {
+const getNavDataCached = async () => {
   "use cache";
 
   cacheLife({
@@ -13,13 +13,17 @@ const getCategoriesWithCountCached = async () => {
     expire: 6 * 60 * 60,
   });
 
-  const products = await getProducts();
-  const categories = await getCategoriesWithCount();
+  // Parallelize the queries to reduce total execution time
+  const [products, categories] = await Promise.all([
+    getProductsForNav(),
+    getCategoriesWithCount(),
+  ]);
+
   return { categories, products };
 };
 
 export const AppHeader = async () => {
-  const { categories, products } = await getCategoriesWithCountCached();
+  const { categories, products } = await getNavDataCached();
 
   return <Navbar categories={categories} products={products} />;
 };
