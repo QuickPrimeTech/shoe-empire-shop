@@ -43,14 +43,11 @@ export async function CategoryProductsGrid({
     ? parsed.data
     : { page: 1, limit: 15 };
 
-  console.log("Valid filters:", filters);
-
   const { data, totalPages, totalCount } = await getPaginatedProductsCached(
     filters,
     slug,
   );
 
-  console.log("Total Pages  ---->", totalPages);
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-2">

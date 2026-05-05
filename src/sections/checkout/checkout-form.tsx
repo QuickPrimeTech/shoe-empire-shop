@@ -97,7 +97,6 @@ export default function CheckoutForm() {
         }, 3000);
       }, 1000);
     } else {
-      console.log("clearing cart .........");
       clearCart();
       setStep("confirmed");
     }

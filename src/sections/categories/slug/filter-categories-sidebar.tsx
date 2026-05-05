@@ -19,7 +19,6 @@ const getProductsCached = async (categorySlug: string) => {
 
 export async function FilterCateogriesidebar({ params }: SlugParam) {
   const { slug } = await params;
-  console.log("slug ----->", slug);
   const products = await getProductsCached(slug); // Cached for 6 hours
 
   return (

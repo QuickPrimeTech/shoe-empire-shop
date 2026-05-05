@@ -33,12 +33,9 @@ export async function ProductGrid({ searchParams }: SearchParams) {
     ? parsed.data
     : { page: 1, limit: 15 };
 
-  console.log("Valid filters:", filters);
-
   const { data, totalPages, totalCount } =
     await getPaginatedProductsCached(filters);
 
-  console.log("Total Pages  ---->", totalPages);
   return (
     <div className="space-y-4">
       <AppBreadcrumb />
