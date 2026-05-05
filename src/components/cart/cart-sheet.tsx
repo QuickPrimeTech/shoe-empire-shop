@@ -102,11 +102,13 @@ export function CartSheet() {
                   Continue Shopping
                 </Button>
               </SheetClose>
-              <Button size={"xl"} className="flex-1" asChild>
-                <Link href={"/checkout"}>
-                  Checkout <ArrowRight className="size-5 ml-1.5" />
-                </Link>
-              </Button>
+              <SheetClose asChild>
+                <Button size={"xl"} className="flex-1" asChild>
+                  <Link href={"/checkout"}>
+                    Checkout <ArrowRight className="size-5 ml-1.5" />
+                  </Link>
+                </Button>
+              </SheetClose>
             </SheetFooter>
           </>
         )}
